@@ -24,8 +24,6 @@ namespace TreeDotNet {
 			return new TNode { Value = value };
 		}
 
-		//public IList<TNode> 
-
 		public TNode FirstChild { get; private set; }
 		public TNode Parent { get; private set; }
 		public TNode Previous { get; private set; }
