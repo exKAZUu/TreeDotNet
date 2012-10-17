@@ -24,42 +24,42 @@ namespace TreeDotNet.Tests {
 	public class NodeTest {
 		[Test]
 		public void Create1Node() {
-			Assert.That(new Node<String>("a").ToString(), Is.EqualTo("a\r\n"));
+			Assert.That(Node.Create("a").ToString(), Is.EqualTo("a\r\n"));
 		}
 
 		[Test]
 		public void Create2Nodes() {
-			var node = new Node<String>("a");
-			node.AddFirst(new Node<string>("b"));
+			var node = Node.Create("a");
+			node.AddFirst(Node.Create("b"));
 			Assert.That(node.ToString(), Is.EqualTo("a\r\n  b\r\n"));
 		}
 
 		[Test]
 		public void Create3Nodes() {
-			var node = new Node<String>("a");
-			node.AddLast(new Node<string>("b"));
-			node.AddFirst(new Node<string>("c"));
+			var node = Node.Create("a");
+			node.AddLast(Node.Create("b"));
+			node.AddFirst(Node.Create("c"));
 			Assert.That(node.ToString(), Is.EqualTo("a\r\n  c\r\n  b\r\n"));
 		}
 
 		[Test]
 		public void Create4Nodes() {
-			var node = new Node<String>("a");
-			node.AddLast(new Node<string>("b"));
-			node.AddFirst(new Node<string>("c"));
-			node.AddLast(new Node<string>("d"));
+			var node = Node.Create("a");
+			node.AddLast(Node.Create("b"));
+			node.AddFirst(Node.Create("c"));
+			node.AddLast(Node.Create("d"));
 			Assert.That(node.ToString(), Is.EqualTo("a\r\n  c\r\n  b\r\n  d\r\n"));
 		}
 
 		[Test]
 		public void CreateTreeAndTraverse() {
-			var node = new Node<String>("a");
-			var c3 = node.AddFirst(new Node<string>("b"));
-			var c4 = node.AddLast(new Node<string>("c"));
-			var c2 = node.AddFirst(new Node<string>("d"));
-			var c1 = node.AddFirst(new Node<string>("e"));
-			var d2 = c3.AddFirst(new Node<string>("f"));
-			var d1 = c3.AddFirst(new Node<string>("g"));
+			var node = Node.Create("a");
+			var c3 = node.AddFirst(Node.Create("b"));
+			var c4 = node.AddLast(Node.Create("c"));
+			var c2 = node.AddFirst(Node.Create("d"));
+			var c1 = node.AddFirst(Node.Create("e"));
+			var d2 = c3.AddFirst(Node.Create("f"));
+			var d1 = c3.AddFirst(Node.Create("g"));
 			Assert.That(
 					node.ToString(),
 					Is.EqualTo("a\r\n  e\r\n  d\r\n  b\r\n    g\r\n    f\r\n  c\r\n"));

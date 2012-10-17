@@ -22,8 +22,14 @@ using System.Diagnostics.Contracts;
 using System.Text;
 
 namespace TreeDotNet {
+	public static class Node {
+		public static Node<T> Create<T>(T value) {
+			return new Node<T>(value);
+		} 
+	}
+
 	/// <summary>
-	///   Instead of XElement.
+	///   A class which represents node in the <see cref="Tree"/> instead of XElement.
 	/// </summary>
 	/// <typeparam name="T"> </typeparam>
 	public class Node<T> : INode<T> {
