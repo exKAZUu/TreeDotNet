@@ -1,57 +1,42 @@
-#region License
-
-// Copyright (C) 2011-2012 The Unicoen Project
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//     http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-#endregion
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Text;
 
 namespace TreeDotNet {
-	public static class Node {
-		public static Node<T> Create<T>(T value) {
-			return new Node<T>(value);
-		} 
-	}
-
 	/// <summary>
 	///   A class which represents node in the <see cref="Tree"/> instead of XElement.
 	/// </summary>
+	/// <typeparam name="TNode"> </typeparam>
 	/// <typeparam name="T"> </typeparam>
-	public class Node<T> : INode<T> {
-		private Node() {}
-
-		public Node(T value) {
-			Value = value;
-			Previous = this;
-			Next = this;
+	public class Node<TNode, T> : INode<T>
+			where TNode : Node<TNode, T>, new() {
+		public Node() {
+			Previous = This;
+			Next = This;
 		}
 
-		public Node<T> FirstChild { get; private set; }
-		public Node<T> Parent { get; private set; }
-		public Node<T> Previous { get; private set; }
-		public Node<T> Next { get; private set; }
+		private TNode This {
+			get { return (TNode)this; }
+		}
+
+		public static TNode Create(T value) {
+			return new TNode { Value = value };
+		}
+
+		//public IList<TNode> 
+
+		public TNode FirstChild { get; private set; }
+		public TNode Parent { get; private set; }
+		public TNode Previous { get; private set; }
+		public TNode Next { get; private set; }
 		public T Value { get; set; }
 
-		public Node<T> LastChild {
+		public TNode LastChild {
 			get { return FirstChild == null ? null : FirstChild.Previous; }
 		}
 
-		public IEnumerable<Node<T>> Children {
+		public IEnumerable<TNode> Children {
 			get {
 				var node = FirstChild;
 				if (node == null) {
@@ -65,7 +50,7 @@ namespace TreeDotNet {
 			}
 		}
 
-		public IEnumerable<Node<T>> Nexts {
+		public IEnumerable<TNode> Nexts {
 			get {
 				var node = Next;
 				var terminal = Parent.FirstChild;
@@ -76,9 +61,9 @@ namespace TreeDotNet {
 			}
 		}
 
-		public IEnumerable<Node<T>> NextsWithSelf {
+		public IEnumerable<TNode> NextsWithSelf {
 			get {
-				var node = this;
+				var node = This;
 				var terminal = Parent.FirstChild;
 				do {
 					yield return node;
@@ -87,10 +72,10 @@ namespace TreeDotNet {
 			}
 		}
 
-		public IEnumerable<Node<T>> ReverseNexts {
+		public IEnumerable<TNode> ReverseNexts {
 			get {
 				var node = Parent.LastChild;
-				var terminal = this;
+				var terminal = This;
 				while (node != terminal) {
 					yield return node;
 					node = node.Previous;
@@ -98,10 +83,10 @@ namespace TreeDotNet {
 			}
 		}
 
-		public IEnumerable<Node<T>> ReverseNextsWithSelf {
+		public IEnumerable<TNode> ReverseNextsWithSelf {
 			get {
 				var node = Parent.FirstChild;
-				var terminal = this;
+				var terminal = This;
 				do {
 					node = node.Previous;
 					yield return node;
@@ -109,10 +94,10 @@ namespace TreeDotNet {
 			}
 		}
 
-		public IEnumerable<Node<T>> Previouses {
+		public IEnumerable<TNode> Previouses {
 			get {
 				var node = Parent.FirstChild;
-				var terminal = this;
+				var terminal = This;
 				while (node != terminal) {
 					yield return node;
 					node = node.Next;
@@ -120,10 +105,10 @@ namespace TreeDotNet {
 			}
 		}
 
-		public IEnumerable<Node<T>> PreviousesWithSelf {
+		public IEnumerable<TNode> PreviousesWithSelf {
 			get {
 				var node = Parent.LastChild;
-				var terminal = this;
+				var terminal = This;
 				do {
 					node = node.Next;
 					yield return node;
@@ -131,7 +116,7 @@ namespace TreeDotNet {
 			}
 		}
 
-		public IEnumerable<Node<T>> ReversePreviouses {
+		public IEnumerable<TNode> ReversePreviouses {
 			get {
 				var node = Previous;
 				var terminal = Parent.LastChild;
@@ -142,9 +127,9 @@ namespace TreeDotNet {
 			}
 		}
 
-		public IEnumerable<Node<T>> ReversePreviousesWithSelf {
+		public IEnumerable<TNode> ReversePreviousesWithSelf {
 			get {
-				var node = this;
+				var node = This;
 				var terminal = Parent.LastChild;
 				do {
 					yield return node;
@@ -153,42 +138,42 @@ namespace TreeDotNet {
 			}
 		}
 
-		public Node<T> AddFirst(Node<T> node) {
+		public TNode AddFirst(TNode node) {
 			Contract.Requires<ArgumentException>(
 					node.Parent == null, "The specified node already has a parent node.");
 			return PrivateAddFirst(node);
 		}
 
-		public Node<T> AddFirst(T value) {
-			return PrivateAddFirst(new Node<T> { Value = value });
+		public TNode AddFirst(T value) {
+			return PrivateAddFirst(Create(value));
 		}
 
-		private Node<T> PrivateAddFirst(Node<T> node) {
+		private TNode PrivateAddFirst(TNode node) {
 			PrivateAddLast(node);
 			FirstChild = node;
 			return node;
 		}
 
-		private void AddPreviousPrivate(Node<T> node) {
-			node.Next = this;
+		private void AddPreviousPrivate(TNode node) {
+			node.Next = This;
 			node.Previous = Previous;
 			Previous.Next = node;
 			Previous = node;
 		}
 
-		public Node<T> AddLast(Node<T> node) {
+		public TNode AddLast(TNode node) {
 			Contract.Requires<ArgumentException>(
 					node.Parent == null, "The specified node already has a parent node.");
 			return PrivateAddLast(node);
 		}
 
-		public Node<T> AddLast(T value) {
-			return PrivateAddLast(new Node<T> { Value = value });
+		public TNode AddLast(T value) {
+			return PrivateAddLast(Create(value));
 		}
 
-		private Node<T> PrivateAddLast(Node<T> node) {
+		private TNode PrivateAddLast(TNode node) {
 			var second = FirstChild;
-			node.Parent = this;
+			node.Parent = This;
 			if (second == null) {
 				node.Next = node;
 				node.Previous = node;
@@ -201,12 +186,12 @@ namespace TreeDotNet {
 
 		public override String ToString() {
 			var builder = new StringBuilder();
-			ToStringPrivate(this, 0, builder);
+			ToStringPrivate(This, 0, builder);
 			return builder.ToString();
 		}
 
 		private static void ToStringPrivate(
-				Node<T> node, int depth, StringBuilder builder) {
+				TNode node, int depth, StringBuilder builder) {
 			if (node == null) {
 				return;
 			}

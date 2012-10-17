@@ -24,42 +24,42 @@ namespace TreeDotNet.Tests {
 	public class NodeTest {
 		[Test]
 		public void Create1Node() {
-			Assert.That(Node.Create("a").ToString(), Is.EqualTo("a\r\n"));
+			Assert.That(Nodes.Create("a").ToString(), Is.EqualTo("a\r\n"));
 		}
 
 		[Test]
 		public void Create2Nodes() {
-			var node = Node.Create("a");
-			node.AddFirst(Node.Create("b"));
+			var node = Nodes.Create("a");
+			node.AddFirst(Nodes.Create("b"));
 			Assert.That(node.ToString(), Is.EqualTo("a\r\n  b\r\n"));
 		}
 
 		[Test]
 		public void Create3Nodes() {
-			var node = Node.Create("a");
-			node.AddLast(Node.Create("b"));
-			node.AddFirst(Node.Create("c"));
+			var node = Nodes.Create("a");
+			node.AddLast(Nodes.Create("b"));
+			node.AddFirst(Nodes.Create("c"));
 			Assert.That(node.ToString(), Is.EqualTo("a\r\n  c\r\n  b\r\n"));
 		}
 
 		[Test]
 		public void Create4Nodes() {
-			var node = Node.Create("a");
-			node.AddLast(Node.Create("b"));
-			node.AddFirst(Node.Create("c"));
-			node.AddLast(Node.Create("d"));
+			var node = Nodes.Create("a");
+			node.AddLast(Nodes.Create("b"));
+			node.AddFirst(Nodes.Create("c"));
+			node.AddLast(Nodes.Create("d"));
 			Assert.That(node.ToString(), Is.EqualTo("a\r\n  c\r\n  b\r\n  d\r\n"));
 		}
 
 		[Test]
 		public void CreateTreeAndTraverse() {
-			var node = Node.Create("a");
-			var c3 = node.AddFirst(Node.Create("b"));
-			var c4 = node.AddLast(Node.Create("c"));
-			var c2 = node.AddFirst(Node.Create("d"));
-			var c1 = node.AddFirst(Node.Create("e"));
-			var d2 = c3.AddFirst(Node.Create("f"));
-			var d1 = c3.AddFirst(Node.Create("g"));
+			var node = Nodes.Create("a");
+			var c3 = node.AddFirst(Nodes.Create("b"));
+			var c4 = node.AddLast(Nodes.Create("c"));
+			var c2 = node.AddFirst(Nodes.Create("d"));
+			var c1 = node.AddFirst(Nodes.Create("e"));
+			var d2 = c3.AddFirst(Nodes.Create("f"));
+			var d1 = c3.AddFirst(Nodes.Create("g"));
 			Assert.That(
 					node.ToString(),
 					Is.EqualTo("a\r\n  e\r\n  d\r\n  b\r\n    g\r\n    f\r\n  c\r\n"));

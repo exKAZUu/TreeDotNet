@@ -92,8 +92,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="INode.cs" />
-    <Compile Include="Tree.cs" />
     <Compile Include="Node.cs" />
+    <Compile Include="StringNode.cs" />
+    <Compile Include="Tree.cs" />
+    <Compile Include="Nodes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
