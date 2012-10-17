@@ -1,6 +1,6 @@
 ﻿#region License
 
-// Copyright (C) 2011-2012 The Unicoen Project
+// Copyright (C) 2011-2012 Kazunori Sakamoto
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,18 +20,25 @@ using System;
 using NUnit.Framework;
 
 namespace TreeDotNet.Tests {
+	public static class StringExtensionForTest {
+		public static string NormalizeNewLine(this string text) {
+			return text.Replace("\n", Environment.NewLine);
+		}
+	}
+
 	[TestFixture]
 	public class NodeTest {
 		[Test]
 		public void Create1Node() {
-			Assert.That(Nodes.Create("a").ToString(), Is.EqualTo("a\r\n"));
+			Assert.That(
+					Nodes.Create("a").ToString(), Is.EqualTo("a\n".NormalizeNewLine()));
 		}
 
 		[Test]
 		public void Create2Nodes() {
 			var node = Nodes.Create("a");
 			node.AddFirst(Nodes.Create("b"));
-			Assert.That(node.ToString(), Is.EqualTo("a\r\n  b\r\n"));
+			Assert.That(node.ToString(), Is.EqualTo("a\n  b\n".NormalizeNewLine()));
 		}
 
 		[Test]
@@ -39,7 +46,7 @@ namespace TreeDotNet.Tests {
 			var node = Nodes.Create("a");
 			node.AddLast(Nodes.Create("b"));
 			node.AddFirst(Nodes.Create("c"));
-			Assert.That(node.ToString(), Is.EqualTo("a\r\n  c\r\n  b\r\n"));
+			Assert.That(node.ToString(), Is.EqualTo("a\n  c\n  b\n".NormalizeNewLine()));
 		}
 
 		[Test]
@@ -48,7 +55,8 @@ namespace TreeDotNet.Tests {
 			node.AddLast(Nodes.Create("b"));
 			node.AddFirst(Nodes.Create("c"));
 			node.AddLast(Nodes.Create("d"));
-			Assert.That(node.ToString(), Is.EqualTo("a\r\n  c\r\n  b\r\n  d\r\n"));
+			Assert.That(
+					node.ToString(), Is.EqualTo("a\n  c\n  b\n  d\n".NormalizeNewLine()));
 		}
 
 		[Test]
@@ -62,7 +70,7 @@ namespace TreeDotNet.Tests {
 			var d1 = c3.AddFirst(Nodes.Create("g"));
 			Assert.That(
 					node.ToString(),
-					Is.EqualTo("a\r\n  e\r\n  d\r\n  b\r\n    g\r\n    f\r\n  c\r\n"));
+					Is.EqualTo("a\n  e\n  d\n  b\n    g\n    f\n  c\n".NormalizeNewLine()));
 
 			Assert.That(c3.Children, Is.EqualTo(new[] { d1, d2 }));
 			Assert.That(c3.Nexts, Is.EqualTo(new[] { c4 }));
