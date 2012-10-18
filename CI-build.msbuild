@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <ClassLibraryOutputDirectory>bin\$(Configuration)</ClassLibraryOutputDirectory>
     <NUnitPath>packages\NUnit.Runners.2.6.1\tools</NUnitPath>
   </PropertyGroup>
 
   <Target Name="Clean">
-    <Exec Condition=" ('$(OS)' != 'Windows_NT') " Command=" rm -r -f $(ClassLibraryOutputDirectory) " />
-    <RemoveDir Directories="$(ClassLibraryOutputDirectory)" Condition="Exists('$(ClassLibraryOutputDirectory)')" />
+    <Exec Condition=" ('$(OS)' != 'Windows_NT') " Command="rm -r -f $(ClassLibraryOutputDirectory)" />
+    <Exec Condition=" ('$(OS)' == 'Windows_NT') " Command="del /q $(ClassLibraryOutputDirectory)" />
   </Target>
 
   <Target Name="Build" DependsOnTargets="Clean">

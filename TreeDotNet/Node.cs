@@ -137,8 +137,8 @@ namespace TreeDotNet {
 		}
 
 		public TNode AddFirst(TNode node) {
-			Contract.Requires<ArgumentException>(
-					node.Parent == null, "The specified node already has a parent node.");
+			Contract.Requires(node != null);
+			Contract.Requires(node.Parent == null);
 			return PrivateAddFirst(node);
 		}
 
@@ -160,9 +160,8 @@ namespace TreeDotNet {
 		}
 
 		public TNode AddLast(TNode node) {
+			Contract.Requires(node != null);
 			Contract.Requires(node.Parent == null);
-			//Contract.Requires<ArgumentException>(
-			//        node.Parent == null, "The specified node already has a parent node.");
 			return PrivateAddLast(node);
 		}
 
