@@ -1,3 +1,21 @@
+#region License
+
+// Copyright (C) 2011-2012 Kazunori Sakamoto
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+#endregion
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -22,6 +40,14 @@ namespace TreeDotNet {
 
 		public static TNode Create(T value) {
 			return new TNode { Value = value };
+		}
+
+		public TNode FirstSibling {
+			get { return Parent != null ? Parent.FirstChild : This; }
+		}
+
+		public TNode LastSibling {
+			get { return Parent != null ? Parent.FirstChild.Previous : This; }
 		}
 
 		public TNode FirstChild { get; private set; }
@@ -51,7 +77,7 @@ namespace TreeDotNet {
 		public IEnumerable<TNode> Nexts {
 			get {
 				var node = Next;
-				var terminal = Parent.FirstChild;
+				var terminal = FirstSibling;
 				while (node != terminal) {
 					yield return node;
 					node = node.Next;
@@ -62,7 +88,7 @@ namespace TreeDotNet {
 		public IEnumerable<TNode> NextsWithSelf {
 			get {
 				var node = This;
-				var terminal = Parent.FirstChild;
+				var terminal = FirstSibling;
 				do {
 					yield return node;
 					node = node.Next;
@@ -72,7 +98,7 @@ namespace TreeDotNet {
 
 		public IEnumerable<TNode> ReverseNexts {
 			get {
-				var node = Parent.LastChild;
+				var node = LastSibling;
 				var terminal = This;
 				while (node != terminal) {
 					yield return node;
@@ -83,7 +109,7 @@ namespace TreeDotNet {
 
 		public IEnumerable<TNode> ReverseNextsWithSelf {
 			get {
-				var node = Parent.FirstChild;
+				var node = FirstSibling;
 				var terminal = This;
 				do {
 					node = node.Previous;
@@ -94,7 +120,7 @@ namespace TreeDotNet {
 
 		public IEnumerable<TNode> Previouses {
 			get {
-				var node = Parent.FirstChild;
+				var node = FirstSibling;
 				var terminal = This;
 				while (node != terminal) {
 					yield return node;
@@ -105,7 +131,7 @@ namespace TreeDotNet {
 
 		public IEnumerable<TNode> PreviousesWithSelf {
 			get {
-				var node = Parent.LastChild;
+				var node = LastSibling;
 				var terminal = This;
 				do {
 					node = node.Next;
@@ -117,7 +143,7 @@ namespace TreeDotNet {
 		public IEnumerable<TNode> ReversePreviouses {
 			get {
 				var node = Previous;
-				var terminal = Parent.LastChild;
+				var terminal = LastSibling;
 				while (node != terminal) {
 					yield return node;
 					node = node.Previous;
@@ -128,7 +154,7 @@ namespace TreeDotNet {
 		public IEnumerable<TNode> ReversePreviousesWithSelf {
 			get {
 				var node = This;
-				var terminal = Parent.LastChild;
+				var terminal = LastSibling;
 				do {
 					yield return node;
 					node = node.Previous;
@@ -136,48 +162,81 @@ namespace TreeDotNet {
 			}
 		}
 
+		public TNode AddPrevious(TNode node) {
+			Contract.Requires(node != null);
+			Contract.Requires(node.Parent == null);
+			Contract.Requires(Parent != null);
+			if (Parent.FirstChild == This) {
+				Parent.FirstChild = node;
+			}
+			return AddPreviousIgnoringFirstChild(node);
+		}
+
+		public TNode AddPrevious(T value) {
+			Contract.Requires(Parent != null);
+			var node = Create(value);
+			if (Parent.FirstChild == This) {
+				Parent.FirstChild = node;
+			}
+			return AddPreviousIgnoringFirstChild(node);
+		}
+
+		public TNode AddNext(TNode node) {
+			Contract.Requires(node != null);
+			Contract.Requires(node.Parent == null);
+			Contract.Requires(Parent != null);
+			return This.Next.AddPreviousIgnoringFirstChild(node);
+		}
+
+		public TNode AddNext(T value) {
+			Contract.Requires(Parent != null);
+			return This.Next.AddPreviousIgnoringFirstChild(Create(value));
+		}
+
 		public TNode AddFirst(TNode node) {
 			Contract.Requires(node != null);
 			Contract.Requires(node.Parent == null);
-			return PrivateAddFirst(node);
+			return AddFirstPrivate(node);
 		}
 
 		public TNode AddFirst(T value) {
-			return PrivateAddFirst(Create(value));
+			return AddFirstPrivate(Create(value));
 		}
 
-		private TNode PrivateAddFirst(TNode node) {
-			PrivateAddLast(node);
+		private TNode AddFirstPrivate(TNode node) {
+			AddLastPrivate(node);
 			FirstChild = node;
 			return node;
 		}
 
-		private void AddPreviousPrivate(TNode node) {
+		private TNode AddPreviousIgnoringFirstChild(TNode node) {
+			node.Parent = This.Parent;
 			node.Next = This;
 			node.Previous = Previous;
 			Previous.Next = node;
 			Previous = node;
+			return node;
 		}
 
 		public TNode AddLast(TNode node) {
 			Contract.Requires(node != null);
 			Contract.Requires(node.Parent == null);
-			return PrivateAddLast(node);
+			return AddLastPrivate(node);
 		}
 
 		public TNode AddLast(T value) {
-			return PrivateAddLast(Create(value));
+			return AddLastPrivate(Create(value));
 		}
 
-		private TNode PrivateAddLast(TNode node) {
+		private TNode AddLastPrivate(TNode node) {
 			var second = FirstChild;
-			node.Parent = This;
 			if (second == null) {
+				node.Parent = This;
 				node.Next = node;
 				node.Previous = node;
 				FirstChild = node;
 			} else {
-				second.AddPreviousPrivate(node);
+				second.AddPreviousIgnoringFirstChild(node);
 			}
 			return node;
 		}

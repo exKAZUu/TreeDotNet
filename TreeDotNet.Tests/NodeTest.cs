@@ -17,6 +17,8 @@
 #endregion
 
 using System;
+using System.Linq;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace TreeDotNet.Tests {
@@ -29,16 +31,29 @@ namespace TreeDotNet.Tests {
 	[TestFixture]
 	public class NodeTest {
 		[Test]
+		public void OperateRoot() {
+			var root = Nodes.Create("a");
+			root.Previouses.Should().HaveCount(0);
+			root.Nexts.Should().HaveCount(0);
+			root.PreviousesWithSelf.Should().Equal(Enumerable.Repeat(root, 1));
+			root.NextsWithSelf.Should().Equal(Enumerable.Repeat(root, 1));
+			root.ReversePreviouses.Should().HaveCount(0);
+			root.ReverseNexts.Should().HaveCount(0);
+			root.ReversePreviousesWithSelf.Should().Equal(Enumerable.Repeat(root, 1));
+			root.ReverseNextsWithSelf.Should().Equal(Enumerable.Repeat(root, 1));
+		}
+
+		[Test]
 		public void Create1Node() {
-			Assert.That(
-					Nodes.Create("a").ToString(), Is.EqualTo("a\n".NormalizeNewLine()));
+			var node = Nodes.Create("a");
+			node.ToString().Should().Be("a\n".NormalizeNewLine());
 		}
 
 		[Test]
 		public void Create2Nodes() {
 			var node = Nodes.Create("a");
 			node.AddFirst(Nodes.Create("b"));
-			Assert.That(node.ToString(), Is.EqualTo("a\n  b\n".NormalizeNewLine()));
+			node.ToString().Should().Be("a\n  b\n".NormalizeNewLine());
 		}
 
 		[Test]
@@ -46,7 +61,7 @@ namespace TreeDotNet.Tests {
 			var node = Nodes.Create("a");
 			node.AddLast(Nodes.Create("b"));
 			node.AddFirst(Nodes.Create("c"));
-			Assert.That(node.ToString(), Is.EqualTo("a\n  c\n  b\n".NormalizeNewLine()));
+			node.ToString().Should().Be("a\n  c\n  b\n".NormalizeNewLine());
 		}
 
 		[Test]
@@ -55,8 +70,7 @@ namespace TreeDotNet.Tests {
 			node.AddLast(Nodes.Create("b"));
 			node.AddFirst(Nodes.Create("c"));
 			node.AddLast(Nodes.Create("d"));
-			Assert.That(
-					node.ToString(), Is.EqualTo("a\n  c\n  b\n  d\n".NormalizeNewLine()));
+			node.ToString().Should().Be("a\n  c\n  b\n  d\n".NormalizeNewLine());
 		}
 
 		[Test]
@@ -68,9 +82,17 @@ namespace TreeDotNet.Tests {
 			var c1 = node.AddFirst(Nodes.Create("e"));
 			var d2 = c3.AddFirst(Nodes.Create("f"));
 			var d1 = c3.AddFirst(Nodes.Create("g"));
-			Assert.That(
-					node.ToString(),
-					Is.EqualTo("a\n  e\n  d\n  b\n    g\n    f\n  c\n".NormalizeNewLine()));
+			var e1 = d1.AddLast("h");
+			var e2 = d2.AddLast("i");
+			var f1 = e1.AddNext("j");
+			var f2 = e1.AddPrevious("k");
+			var g1 = e2.AddPrevious("l");
+			var g2 = e2.AddNext("m");
+			node.ToString()
+			    .Should()
+			    .Be(
+					    "a\n  e\n  d\n  b\n    g\n      k\n      h\n      j\n    f\n      l\n      i\n      m\n  c\n"
+							    .NormalizeNewLine());
 
 			Assert.That(c3.Children, Is.EqualTo(new[] { d1, d2 }));
 			Assert.That(c3.Nexts, Is.EqualTo(new[] { c4 }));
