@@ -33,5 +33,5 @@ output
 download
 *.docstates
 *.dotCover
-nuspec
-/Experiments/AntlrSurvey/lib
+*.nupkg
+.nuget/NuGet*
