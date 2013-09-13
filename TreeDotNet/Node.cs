@@ -23,37 +23,82 @@ using System.Text;
 
 namespace TreeDotNet {
 	/// <summary>
-	///   A class which represents node in the <see cref="Tree"/> instead of XElement.
+	/// Represents a node instead of XElement.
 	/// </summary>
-	/// <typeparam name="TNode"> </typeparam>
-	/// <typeparam name="T"> </typeparam>
+	/// <typeparam name="TNode">The type of this class.</typeparam>
+	/// <typeparam name="T">The type of elements in the list.</typeparam>
 	public class Node<TNode, T> : INode<T>
 			where TNode : Node<TNode, T>, new() {
-		public Node() {
+		/// <summary>
+		/// Initialzies a new instance of the Node class with a default value.
+		/// The Create static method should be used instead of the constructor.
+		/// </summary>
+		private Node() {
 			Previous = This;
 			Next = This;
 		}
 
-		private TNode This {
-			get { return (TNode)this; }
+		/// <summary>
+		/// Initialzies a new instance of the Node class with a default value.
+		/// </summary>
+		/// <returns></returns>
+		public static TNode Create() {
+			return new TNode();
 		}
 
+		/// <summary>
+		/// Initialzies a new instance of the Node class with the specified value.
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
 		public static TNode Create(T value) {
 			return new TNode { Value = value };
 		}
 
+		/// <summary>
+		/// The casted this instance for the simplicity.
+		/// </summary>
+		private TNode This {
+			get { return (TNode)this; }
+		}
+
+		/// <summary>
+		/// Gets the first sibling node or the current node.
+		/// </summary>
 		public TNode FirstSibling {
 			get { return Parent != null ? Parent.FirstChild : This; }
 		}
 
+		/// <summary>
+		/// Gets the last sibling node or the current node.
+		/// </summary>
 		public TNode LastSibling {
 			get { return Parent != null ? Parent.FirstChild.Previous : This; }
 		}
 
+		/// <summary>
+		/// Gets the first child node.
+		/// </summary>
 		public TNode FirstChild { get; private set; }
+
+		/// <summary>
+		/// Gets the parent node.
+		/// </summary>
 		public TNode Parent { get; private set; }
+
+		/// <summary>
+		/// Gets the previous node.
+		/// </summary>
 		public TNode Previous { get; private set; }
+
+		/// <summary>
+		/// Gets the next node.
+		/// </summary>
 		public TNode Next { get; private set; }
+
+		/// <summary>
+		/// Gets the value.
+		/// </summary>
 		public T Value { get; set; }
 
 		public TNode LastChild {

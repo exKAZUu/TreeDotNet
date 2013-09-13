@@ -2,8 +2,8 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <ClassLibraryOutputDirectory>bin\$(Configuration)</ClassLibraryOutputDirectory>
-    <NUnitPath>packages\NUnit.Runners.2.6.1\tools</NUnitPath>
+    <ClassLibraryOutputDirectory>bin/$(Configuration)</ClassLibraryOutputDirectory>
+    <NUnitPath>packages/NUnit.Runners.2.6.2/tools</NUnitPath>
   </PropertyGroup>
 
   <Target Name="Clean">
@@ -12,6 +12,8 @@
   </Target>
 
   <Target Name="Build" DependsOnTargets="Clean">
+    <Exec Condition=" ('$(OS)' != 'Windows_NT') " Command="sh nuget_install.sh" />
+    <Exec Condition=" ('$(OS)' == 'Windows_NT') " Command="nuget_install.bat" />
     <MSBuild
       Projects="TreeDotNet.sln"
       Targets="Build"
@@ -22,7 +24,7 @@
     <CreateItem Include="$(ClassLibraryOutputDirectory)/*.Tests.dll">
       <Output TaskParameter="Include" ItemName="TestAssembly" />
     </CreateItem>
-    <Exec Condition=" ('$(OS)' != 'Windows_NT') " Command="mono $(NUnitPath)\nunit-console.exe @(TestAssembly, ' ')" />
-    <Exec Condition=" ('$(OS)' == 'Windows_NT') " Command="$(NUnitPath)\nunit-console.exe @(TestAssembly, ' ')" />
+    <Exec Condition=" ('$(OS)' != 'Windows_NT') " Command="mono --runtime=v4.0.30319 $(NUnitPath)/nunit-console.exe @(TestAssembly, ' ')" />
+    <Exec Condition=" ('$(OS)' == 'Windows_NT') " Command="$(NUnitPath)/nunit-console.exe @(TestAssembly, ' ')" />
   </Target>
 </Project>
