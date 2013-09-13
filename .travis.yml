@@ -3,16 +3,16 @@
 
 language: c
       
-# Make sure mono is installed
 install:
- - sudo apt-get install mono-devel mono-gmcs
-
-# Run the Build script
-script:
+ # Set up git submodules
  - git submodule update --init
+ # Install Mono comipler and runtime
+ - sudo apt-get install mono-devel mono-gmcs
+ # Set up certificatins for NuGet
+ - mozroots --import --sync
 
-# Run Tests
-after_script:
+script:
+ # Build and run tests
  - xbuild CI-build.msbuild /t:Test
 
 # Notify development list when needed
