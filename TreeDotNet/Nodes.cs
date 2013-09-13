@@ -1,6 +1,6 @@
 #region License
 
-// Copyright (C) 2011-2012 The Unicoen Project
+// Copyright (C) 2011-2013 Kazunori Sakamoto
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,6 +20,6 @@ namespace TreeDotNet {
 	public static class Nodes {
 		public static StringNode Create(string value) {
 			return StringNode.Create(value);
-		} 
+		}
 	}
 }

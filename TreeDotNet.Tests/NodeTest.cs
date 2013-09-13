@@ -1,6 +1,6 @@
 ﻿#region License
 
-// Copyright (C) 2011-2012 Kazunori Sakamoto
+// Copyright (C) 2011-2013 Kazunori Sakamoto
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -89,10 +89,10 @@ namespace TreeDotNet.Tests {
 			var g1 = e2.AddPrevious("l");
 			var g2 = e2.AddNext("m");
 			node.ToString()
-			    .Should()
-			    .Be(
-					    "a\n  e\n  d\n  b\n    g\n      k\n      h\n      j\n    f\n      l\n      i\n      m\n  c\n"
-							    .NormalizeNewLine());
+					.Should()
+					.Be(
+							"a\n  e\n  d\n  b\n    g\n      k\n      h\n      j\n    f\n      l\n      i\n      m\n  c\n"
+									.NormalizeNewLine());
 
 			Assert.That(c3.Children, Is.EqualTo(new[] { d1, d2 }));
 			Assert.That(c3.Nexts, Is.EqualTo(new[] { c4 }));

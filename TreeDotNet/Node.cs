@@ -1,6 +1,6 @@
 #region License
 
-// Copyright (C) 2011-2012 Kazunori Sakamoto
+// Copyright (C) 2011-2013 Kazunori Sakamoto
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ namespace TreeDotNet {
 		/// Initialzies a new instance of the Node class with a default value.
 		/// The Create static method should be used instead of the constructor.
 		/// </summary>
-		private Node() {
+		protected Node() {
 			Previous = This;
 			Next = This;
 		}
