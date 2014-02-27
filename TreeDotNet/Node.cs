@@ -310,7 +310,7 @@ namespace TreeDotNet {
 			for (int i = 0; i < depth; i++) {
 				builder.Append("  ");
 			}
-			builder.AppendLine(node.Value.ToString());
+			builder.AppendLine(!Equals(node.Value, null) ? node.Value.ToString() : "");
 			foreach (var child in node.Children) {
 				ToStringPrivate(child, depth + 1, builder);
 			}
