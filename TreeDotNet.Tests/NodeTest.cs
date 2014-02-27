@@ -1,6 +1,6 @@
 ﻿#region License
 
-// Copyright (C) 2011-2013 Kazunori Sakamoto
+// Copyright (C) 2011-2014 Kazunori Sakamoto
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ namespace TreeDotNet.Tests {
 	public class NodeTest {
 		[Test]
 		public void OperateRoot() {
-			var root = Nodes.Create("a");
+			var root = new StringNode("a");
 			root.Previouses.Should().HaveCount(0);
 			root.Nexts.Should().HaveCount(0);
 			root.PreviousesWithSelf.Should().Equal(Enumerable.Repeat(root, 1));
@@ -45,43 +45,47 @@ namespace TreeDotNet.Tests {
 
 		[Test]
 		public void Create1Node() {
-			var node = Nodes.Create("a");
+			var node = new StringNode("a");
 			node.ToString().Should().Be("a\n".NormalizeNewLine());
+			string.Join("", node.Descendants().Select(n => n.Value)).Should().Be("");
 		}
 
 		[Test]
 		public void Create2Nodes() {
-			var node = Nodes.Create("a");
-			node.AddFirst(Nodes.Create("b"));
+			var node = new StringNode("a");
+			node.AddFirst(new StringNode("b"));
 			node.ToString().Should().Be("a\n  b\n".NormalizeNewLine());
+			string.Join("", node.Descendants().Select(n => n.Value)).Should().Be("b");
 		}
 
 		[Test]
 		public void Create3Nodes() {
-			var node = Nodes.Create("a");
-			node.AddLast(Nodes.Create("b"));
-			node.AddFirst(Nodes.Create("c"));
+			var node = new StringNode("a");
+			node.AddLast(new StringNode("b"));
+			node.AddFirst(new StringNode("c"));
 			node.ToString().Should().Be("a\n  c\n  b\n".NormalizeNewLine());
+			string.Join("", node.Descendants().Select(n => n.Value)).Should().Be("cb");
 		}
 
 		[Test]
 		public void Create4Nodes() {
-			var node = Nodes.Create("a");
-			node.AddLast(Nodes.Create("b"));
-			node.AddFirst(Nodes.Create("c"));
-			node.AddLast(Nodes.Create("d"));
+			var node = new StringNode("a");
+			node.AddLast(new StringNode("b"));
+			node.AddFirst(new StringNode("c"));
+			node.AddLast(new StringNode("d"));
 			node.ToString().Should().Be("a\n  c\n  b\n  d\n".NormalizeNewLine());
+			string.Join("", node.Descendants().Select(n => n.Value)).Should().Be("cbd");
 		}
 
 		[Test]
 		public void CreateTreeAndTraverse() {
-			var node = Nodes.Create("a");
-			var c3 = node.AddFirst(Nodes.Create("b"));
-			var c4 = node.AddLast(Nodes.Create("c"));
-			var c2 = node.AddFirst(Nodes.Create("d"));
-			var c1 = node.AddFirst(Nodes.Create("e"));
-			var d2 = c3.AddFirst(Nodes.Create("f"));
-			var d1 = c3.AddFirst(Nodes.Create("g"));
+			var node = new StringNode("a");
+			var c3 = node.AddFirst(new StringNode("b"));
+			var c4 = node.AddLast(new StringNode("c"));
+			var c2 = node.AddFirst(new StringNode("d"));
+			var c1 = node.AddFirst(new StringNode("e"));
+			var d2 = c3.AddFirst(new StringNode("f"));
+			var d1 = c3.AddFirst(new StringNode("g"));
 			var e1 = d1.AddLast("h");
 			var e2 = d2.AddLast("i");
 			var f1 = e1.AddNext("j");
@@ -93,6 +97,7 @@ namespace TreeDotNet.Tests {
 					.Be(
 							"a\n  e\n  d\n  b\n    g\n      k\n      h\n      j\n    f\n      l\n      i\n      m\n  c\n"
 									.NormalizeNewLine());
+			string.Join("", node.Descendants().Select(n => n.Value)).Should().Be("edbgkhjflimc");
 
 			Assert.That(c3.Children, Is.EqualTo(new[] { d1, d2 }));
 			Assert.That(c3.Nexts, Is.EqualTo(new[] { c4 }));

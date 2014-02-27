@@ -1,6 +1,6 @@
 #region License
 
-// Copyright (C) 2011-2013 Kazunori Sakamoto
+// Copyright (C) 2011-2014 Kazunori Sakamoto
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,5 +17,28 @@
 #endregion
 
 namespace TreeDotNet {
-	public class StringNode : Node<StringNode, string> {}
+	public class StringNode : Node<StringNode, string> {
+		public new string Value {
+			get { return base.Value; }
+			set { base.Value = value; }
+		}
+
+		public StringNode(string node) : base(node) {}
+
+		public StringNode AddFirst(string value) {
+			return AddFirst(new StringNode(value));
+		}
+
+		public StringNode AddLast(string value) {
+			return AddLast(new StringNode(value));
+		}
+
+		public StringNode AddNext(string value) {
+			return AddNext(new StringNode(value));
+		}
+
+		public StringNode AddPrevious(string value) {
+			return AddPrevious(new StringNode(value));
+		}
+	}
 }

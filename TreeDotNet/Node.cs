@@ -1,6 +1,6 @@
 #region License
 
-// Copyright (C) 2011-2013 Kazunori Sakamoto
+// Copyright (C) 2011-2014 Kazunori Sakamoto
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Text;
 
 namespace TreeDotNet {
@@ -28,10 +29,9 @@ namespace TreeDotNet {
 	/// <typeparam name="TNode">The type of this class.</typeparam>
 	/// <typeparam name="T">The type of elements in the list.</typeparam>
 	public class Node<TNode, T> : INode<T>
-			where TNode : Node<TNode, T>, new() {
+			where TNode : Node<TNode, T> {
 		/// <summary>
 		/// Initialzies a new instance of the Node class with a default value.
-		/// The Create static method should be used instead of the constructor.
 		/// </summary>
 		protected Node() {
 			Previous = This;
@@ -39,20 +39,12 @@ namespace TreeDotNet {
 		}
 
 		/// <summary>
-		/// Initialzies a new instance of the Node class with a default value.
-		/// </summary>
-		/// <returns></returns>
-		public static TNode Create() {
-			return new TNode();
-		}
-
-		/// <summary>
 		/// Initialzies a new instance of the Node class with the specified value.
 		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public static TNode Create(T value) {
-			return new TNode { Value = value };
+		protected Node(T value) {
+			Previous = This;
+			Next = This;
+			Value = value;
 		}
 
 		/// <summary>
@@ -82,6 +74,13 @@ namespace TreeDotNet {
 		public TNode FirstChild { get; private set; }
 
 		/// <summary>
+		/// Gets the last child node.
+		/// </summary>
+		public TNode LastChild {
+			get { return FirstChild == null ? null : FirstChild.Previous; }
+		}
+
+		/// <summary>
 		/// Gets the parent node.
 		/// </summary>
 		public TNode Parent { get; private set; }
@@ -97,13 +96,23 @@ namespace TreeDotNet {
 		public TNode Next { get; private set; }
 
 		/// <summary>
+		/// Gets the previous node or null.
+		/// </summary>
+		public TNode PreviousOrNull {
+			get { return Previous != LastSibling ? Previous : null; }
+		}
+
+		/// <summary>
+		/// Gets the next node or null.
+		/// </summary>
+		public TNode NextOrNull {
+			get { return Next != FirstSibling ? Next : null; }
+		}
+
+		/// <summary>
 		/// Gets the value.
 		/// </summary>
-		public T Value { get; set; }
-
-		public TNode LastChild {
-			get { return FirstChild == null ? null : FirstChild.Previous; }
-		}
+		protected T Value { get; set; }
 
 		public IEnumerable<TNode> Children {
 			get {
@@ -217,15 +226,6 @@ namespace TreeDotNet {
 			return AddPreviousIgnoringFirstChild(node);
 		}
 
-		public TNode AddPrevious(T value) {
-			Contract.Requires(Parent != null);
-			var node = Create(value);
-			if (Parent.FirstChild == This) {
-				Parent.FirstChild = node;
-			}
-			return AddPreviousIgnoringFirstChild(node);
-		}
-
 		public TNode AddNext(TNode node) {
 			Contract.Requires(node != null);
 			Contract.Requires(node.Parent == null);
@@ -233,19 +233,10 @@ namespace TreeDotNet {
 			return This.Next.AddPreviousIgnoringFirstChild(node);
 		}
 
-		public TNode AddNext(T value) {
-			Contract.Requires(Parent != null);
-			return This.Next.AddPreviousIgnoringFirstChild(Create(value));
-		}
-
 		public TNode AddFirst(TNode node) {
 			Contract.Requires(node != null);
 			Contract.Requires(node.Parent == null);
 			return AddFirstPrivate(node);
-		}
-
-		public TNode AddFirst(T value) {
-			return AddFirstPrivate(Create(value));
 		}
 
 		private TNode AddFirstPrivate(TNode node) {
@@ -269,10 +260,6 @@ namespace TreeDotNet {
 			return AddLastPrivate(node);
 		}
 
-		public TNode AddLast(T value) {
-			return AddLastPrivate(Create(value));
-		}
-
 		private TNode AddLastPrivate(TNode node) {
 			var second = FirstChild;
 			if (second == null) {
@@ -284,6 +271,29 @@ namespace TreeDotNet {
 				second.AddPreviousIgnoringFirstChild(node);
 			}
 			return node;
+		}
+
+		public IEnumerable<TNode> Descendants() {
+			return DescendantsAndSelf().Skip(1);
+		}
+
+		public IEnumerable<TNode> DescendantsAndSelf() {
+			var cursor = This;
+			yield return cursor;
+			while (true) {
+				while (cursor.FirstChild != null) {
+					cursor = cursor.FirstChild;
+					yield return cursor;
+				}
+				while (cursor.NextOrNull == null) {
+					cursor = cursor.Parent;
+					if (cursor == null) {
+						yield break;
+					}
+				}
+				cursor = cursor.Next;
+				yield return cursor;
+			}
 		}
 
 		public override String ToString() {
