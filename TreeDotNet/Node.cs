@@ -273,6 +273,18 @@ namespace TreeDotNet {
 			return node;
 		}
 
+		public IEnumerable<TNode> Elements() {
+			return Children;
+		}
+
+		public IEnumerable<TNode> ElementsBeforeSelf() {
+			return Previouses;
+		}
+
+		public IEnumerable<TNode> ElementsAfterSelf() {
+			return Nexts;
+		}
+
 		public IEnumerable<TNode> Descendants() {
 			return DescendantsAndSelf().Skip(1);
 		}
