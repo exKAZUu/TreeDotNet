@@ -17,28 +17,28 @@
 #endregion
 
 namespace TreeDotNet {
-	public class StringNode : Node<StringNode, string> {
-		public new string Value {
-			get { return base.Value; }
-			set { base.Value = value; }
-		}
+    public class StringNode : Node<StringNode, string> {
+        public new string Value {
+            get { return base.Value; }
+            set { base.Value = value; }
+        }
 
-		public StringNode(string node) : base(node) {}
+        public StringNode(string node) : base(node) {}
 
-		public StringNode AddFirst(string value) {
-			return AddFirst(new StringNode(value));
-		}
+        public StringNode AddFirst(string value) {
+            return AddFirst(new StringNode(value));
+        }
 
-		public StringNode AddLast(string value) {
-			return AddLast(new StringNode(value));
-		}
+        public StringNode AddLast(string value) {
+            return AddLast(new StringNode(value));
+        }
 
-		public StringNode AddNext(string value) {
-			return AddNext(new StringNode(value));
-		}
+        public StringNode AddNext(string value) {
+            return AddNext(new StringNode(value));
+        }
 
-		public StringNode AddPrevious(string value) {
-			return AddPrevious(new StringNode(value));
-		}
-	}
+        public StringNode AddPrevious(string value) {
+            return AddPrevious(new StringNode(value));
+        }
+    }
 }

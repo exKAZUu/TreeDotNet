@@ -24,11 +24,11 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 
 [assembly: AssemblyTitle("TreeDotNet")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("TreeDotNet is a simple implementation of multi-branch tree written in C#.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Kazunori Sakamoto")]
 [assembly: AssemblyProduct("TreeDotNet")]
-[assembly: AssemblyCopyright("Copyright ©  2012")]
+[assembly: AssemblyCopyright("Copyright © Kazunori Sakamoto 2012-2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

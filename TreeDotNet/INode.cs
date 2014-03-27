@@ -17,5 +17,5 @@
 #endregion
 
 namespace TreeDotNet {
-	public interface INode<T> {}
+    public interface INode<T> {}
 }

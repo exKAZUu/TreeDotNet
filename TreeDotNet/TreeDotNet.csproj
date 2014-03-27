@@ -108,7 +108,6 @@
     <Compile Include="INode.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="StringNode.cs" />
-    <Compile Include="Tree.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

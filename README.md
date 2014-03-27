@@ -1,4 +1,4 @@
-﻿[![Build Status](https://secure.travis-ci.org/exKAZUu/Tree.NET.png?branch=master)](http://travis-ci.org/exKAZUu/Tree.NET)
+﻿[![Build Status](https://secure.travis-ci.org/exKAZUu/TreeDotNet.png?branch=master)](http://travis-ci.org/exKAZUu/TreeDotNet)
 
 # Requirements
 * NuGet
