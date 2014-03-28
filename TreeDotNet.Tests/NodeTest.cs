@@ -98,6 +98,18 @@ namespace TreeDotNet.Tests {
                             "a\n  e\n  d\n  b\n    g\n      k\n      h\n      j\n    f\n      l\n      i\n      m\n  c\n"
                                     .NormalizeNewLine());
             string.Join("", node.Descendants().Select(n => n.Value)).Should().Be("edbgkhjflimc");
+            string.Join("", c1.Descendants().Select(n => n.Value)).Should().Be("");
+            string.Join("", c2.Descendants().Select(n => n.Value)).Should().Be("");
+            string.Join("", c3.Descendants().Select(n => n.Value)).Should().Be("gkhjflim");
+            string.Join("", c4.Descendants().Select(n => n.Value)).Should().Be("");
+            string.Join("", d1.Descendants().Select(n => n.Value)).Should().Be("khj");
+            string.Join("", d2.Descendants().Select(n => n.Value)).Should().Be("lim");
+            string.Join("", e1.Descendants().Select(n => n.Value)).Should().Be("");
+            string.Join("", e2.Descendants().Select(n => n.Value)).Should().Be("");
+            string.Join("", f1.Descendants().Select(n => n.Value)).Should().Be("");
+            string.Join("", f2.Descendants().Select(n => n.Value)).Should().Be("");
+            string.Join("", g1.Descendants().Select(n => n.Value)).Should().Be("");
+            string.Join("", g2.Descendants().Select(n => n.Value)).Should().Be("");
 
             Assert.That(c3.Children, Is.EqualTo(new[] { d1, d2 }));
             Assert.That(c3.Nexts, Is.EqualTo(new[] { c4 }));

@@ -24,7 +24,9 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 
 [assembly: AssemblyTitle("TreeDotNet")]
-[assembly: AssemblyDescription("TreeDotNet is a simple implementation of multi-branch tree written in C#.")]
+[assembly:
+        AssemblyDescription(
+                "TreeDotNet is a simple implementation of multi-branch tree written in C#.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Kazunori Sakamoto")]
 [assembly: AssemblyProduct("TreeDotNet")]
@@ -53,5 +55,5 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.1.1")]
+[assembly: AssemblyFileVersion("1.0.1.1")]

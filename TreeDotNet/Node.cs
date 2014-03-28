@@ -34,16 +34,16 @@ namespace TreeDotNet {
         /// Initialzies a new instance of the Node class with a default value.
         /// </summary>
         protected Node() {
-            Previous = This;
-            Next = This;
+            CyclicPrevious = This;
+            CyclicNext = This;
         }
 
         /// <summary>
         /// Initialzies a new instance of the Node class with the specified value.
         /// </summary>
         protected Node(T value) {
-            Previous = This;
-            Next = This;
+            CyclicPrevious = This;
+            CyclicNext = This;
             Value = value;
         }
 
@@ -65,7 +65,7 @@ namespace TreeDotNet {
         /// Gets the last sibling node or the current node.
         /// </summary>
         public TNode LastSibling {
-            get { return Parent != null ? Parent.FirstChild.Previous : This; }
+            get { return Parent != null ? Parent.FirstChild.CyclicPrevious : This; }
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace TreeDotNet {
         /// Gets the last child node.
         /// </summary>
         public TNode LastChild {
-            get { return FirstChild == null ? null : FirstChild.Previous; }
+            get { return FirstChild == null ? null : FirstChild.CyclicPrevious; }
         }
 
         /// <summary>
@@ -88,25 +88,25 @@ namespace TreeDotNet {
         /// <summary>
         /// Gets the previous node.
         /// </summary>
-        public TNode Previous { get; private set; }
+        public TNode CyclicPrevious { get; private set; }
 
         /// <summary>
         /// Gets the next node.
         /// </summary>
-        public TNode Next { get; private set; }
+        public TNode CyclicNext { get; private set; }
 
         /// <summary>
         /// Gets the previous node or null.
         /// </summary>
-        public TNode PreviousOrNull {
-            get { return Previous != LastSibling ? Previous : null; }
+        public TNode Previous {
+            get { return CyclicPrevious != LastSibling ? CyclicPrevious : null; }
         }
 
         /// <summary>
         /// Gets the next node or null.
         /// </summary>
-        public TNode NextOrNull {
-            get { return Next != FirstSibling ? Next : null; }
+        public TNode Next {
+            get { return CyclicNext != FirstSibling ? CyclicNext : null; }
         }
 
         /// <summary>
@@ -123,18 +123,18 @@ namespace TreeDotNet {
                 var terminal = node;
                 do {
                     yield return node;
-                    node = node.Next;
+                    node = node.CyclicNext;
                 } while (node != terminal);
             }
         }
 
         public IEnumerable<TNode> Nexts {
             get {
-                var node = Next;
+                var node = CyclicNext;
                 var terminal = FirstSibling;
                 while (node != terminal) {
                     yield return node;
-                    node = node.Next;
+                    node = node.CyclicNext;
                 }
             }
         }
@@ -145,7 +145,7 @@ namespace TreeDotNet {
                 var terminal = FirstSibling;
                 do {
                     yield return node;
-                    node = node.Next;
+                    node = node.CyclicNext;
                 } while (node != terminal);
             }
         }
@@ -156,7 +156,7 @@ namespace TreeDotNet {
                 var terminal = This;
                 while (node != terminal) {
                     yield return node;
-                    node = node.Previous;
+                    node = node.CyclicPrevious;
                 }
             }
         }
@@ -166,7 +166,7 @@ namespace TreeDotNet {
                 var node = FirstSibling;
                 var terminal = This;
                 do {
-                    node = node.Previous;
+                    node = node.CyclicPrevious;
                     yield return node;
                 } while (node != terminal);
             }
@@ -178,7 +178,7 @@ namespace TreeDotNet {
                 var terminal = This;
                 while (node != terminal) {
                     yield return node;
-                    node = node.Next;
+                    node = node.CyclicNext;
                 }
             }
         }
@@ -188,7 +188,7 @@ namespace TreeDotNet {
                 var node = LastSibling;
                 var terminal = This;
                 do {
-                    node = node.Next;
+                    node = node.CyclicNext;
                     yield return node;
                 } while (node != terminal);
             }
@@ -196,11 +196,11 @@ namespace TreeDotNet {
 
         public IEnumerable<TNode> ReversePreviouses {
             get {
-                var node = Previous;
+                var node = CyclicPrevious;
                 var terminal = LastSibling;
                 while (node != terminal) {
                     yield return node;
-                    node = node.Previous;
+                    node = node.CyclicPrevious;
                 }
             }
         }
@@ -211,7 +211,7 @@ namespace TreeDotNet {
                 var terminal = LastSibling;
                 do {
                     yield return node;
-                    node = node.Previous;
+                    node = node.CyclicPrevious;
                 } while (node != terminal);
             }
         }
@@ -230,7 +230,7 @@ namespace TreeDotNet {
             Contract.Requires(node != null);
             Contract.Requires(node.Parent == null);
             Contract.Requires(Parent != null);
-            return This.Next.AddPreviousIgnoringFirstChild(node);
+            return This.CyclicNext.AddPreviousIgnoringFirstChild(node);
         }
 
         public TNode AddFirst(TNode node) {
@@ -247,10 +247,10 @@ namespace TreeDotNet {
 
         private TNode AddPreviousIgnoringFirstChild(TNode node) {
             node.Parent = This.Parent;
-            node.Next = This;
-            node.Previous = Previous;
-            Previous.Next = node;
-            Previous = node;
+            node.CyclicNext = This;
+            node.CyclicPrevious = CyclicPrevious;
+            CyclicPrevious.CyclicNext = node;
+            CyclicPrevious = node;
             return node;
         }
 
@@ -264,8 +264,8 @@ namespace TreeDotNet {
             var second = FirstChild;
             if (second == null) {
                 node.Parent = This;
-                node.Next = node;
-                node.Previous = node;
+                node.CyclicNext = node;
+                node.CyclicPrevious = node;
                 FirstChild = node;
             } else {
                 second.AddPreviousIgnoringFirstChild(node);
@@ -278,21 +278,26 @@ namespace TreeDotNet {
         }
 
         public IEnumerable<TNode> DescendantsAndSelf() {
-            var cursor = This;
+            var start = This;
+            var cursor = start;
             yield return cursor;
-            while (true) {
-                while (cursor.FirstChild != null) {
-                    cursor = cursor.FirstChild;
+            if (cursor.FirstChild != null) {
+                cursor = cursor.FirstChild;
+                yield return cursor;
+                while (true) {
+                    while (cursor.FirstChild != null) {
+                        cursor = cursor.FirstChild;
+                        yield return cursor;
+                    }
+                    while (cursor.Next == null) {
+                        cursor = cursor.Parent;
+                        if (cursor == start) {
+                            yield break;
+                        }
+                    }
+                    cursor = cursor.CyclicNext;
                     yield return cursor;
                 }
-                while (cursor.NextOrNull == null) {
-                    cursor = cursor.Parent;
-                    if (cursor == null) {
-                        yield break;
-                    }
-                }
-                cursor = cursor.Next;
-                yield return cursor;
             }
         }
 
