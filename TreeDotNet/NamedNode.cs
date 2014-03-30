@@ -39,6 +39,10 @@ namespace TreeDotNet {
             return AncestorsWithSelf().Where(node => node.Name == name);
         }
 
+        public TNode Child(string name) {
+            return Children().FirstOrDefault(node => node.Name == name);
+        }
+
         public IEnumerable<TNode> Children(string name) {
             return Children().Where(node => node.Name == name);
         }

@@ -114,6 +114,10 @@ namespace TreeDotNet {
         /// </summary>
         protected T Value { get; set; }
 
+        public int ChildrenCount {
+            get { return Children().Count(); }
+        }
+
         #region Traversal
 
         public IEnumerable<TNode> Ancestors() {
@@ -184,12 +188,12 @@ namespace TreeDotNet {
         }
 
         public IEnumerable<TNode> PrevsFromSelf() {
-                var node = CyclicPrev;
-                var terminal = LastSibling;
-                while (node != terminal) {
-                    yield return node;
-                    node = node.CyclicPrev;
-                }
+            var node = CyclicPrev;
+            var terminal = LastSibling;
+            while (node != terminal) {
+                yield return node;
+                node = node.CyclicPrev;
+            }
         }
 
         public IEnumerable<TNode> PrevsFromSelfWithSelf() {
@@ -221,6 +225,10 @@ namespace TreeDotNet {
 
         public IEnumerable<TNode> DescendantsAndSelf() {
             return Enumerable.Repeat(This, 1).Concat(Descendants());
+        }
+
+        public IEnumerable<TNode> DescendantTerminals() {
+            return Descendants().Where(node => node.FirstChild == null);
         }
 
         #endregion
