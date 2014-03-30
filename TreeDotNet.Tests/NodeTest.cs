@@ -22,25 +22,19 @@ using FluentAssertions;
 using NUnit.Framework;
 
 namespace TreeDotNet.Tests {
-    public static class StringExtensionForTest {
-        public static string NormalizeNewLine(this string text) {
-            return text.Replace("\n", Environment.NewLine);
-        }
-    }
-
     [TestFixture]
     public class NodeTest {
         [Test]
         public void OperateRoot() {
             var root = new StringNode("a");
-            root.Previouses.Should().HaveCount(0);
-            root.Nexts.Should().HaveCount(0);
-            root.PreviousesWithSelf.Should().Equal(Enumerable.Repeat(root, 1));
-            root.NextsWithSelf.Should().Equal(Enumerable.Repeat(root, 1));
-            root.ReversePreviouses.Should().HaveCount(0);
-            root.ReverseNexts.Should().HaveCount(0);
-            root.ReversePreviousesWithSelf.Should().Equal(Enumerable.Repeat(root, 1));
-            root.ReverseNextsWithSelf.Should().Equal(Enumerable.Repeat(root, 1));
+            root.PrevsFromFirst().Should().HaveCount(0);
+            root.NextsFromSelf().Should().HaveCount(0);
+            root.PrevsFromFirstWithSelf().Should().Equal(Enumerable.Repeat(root, 1));
+            root.NextsFromSelfWithSelf().Should().Equal(Enumerable.Repeat(root, 1));
+            root.PrevsFromSelf().Should().HaveCount(0);
+            root.NextsFromLast().Should().HaveCount(0);
+            root.PrevsFromSelfWithSelf().Should().Equal(Enumerable.Repeat(root, 1));
+            root.NextsFromLastWithSelf().Should().Equal(Enumerable.Repeat(root, 1));
         }
 
         [Test]
@@ -111,25 +105,33 @@ namespace TreeDotNet.Tests {
             string.Join("", g1.Descendants().Select(n => n.Value)).Should().Be("");
             string.Join("", g2.Descendants().Select(n => n.Value)).Should().Be("");
 
-            Assert.That(c3.Children, Is.EqualTo(new[] { d1, d2 }));
-            Assert.That(c3.Nexts, Is.EqualTo(new[] { c4 }));
-            Assert.That(c3.ReverseNexts, Is.EqualTo(new[] { c4 }));
-            Assert.That(c3.NextsWithSelf, Is.EqualTo(new[] { c3, c4 }));
-            Assert.That(c3.ReverseNextsWithSelf, Is.EqualTo(new[] { c4, c3 }));
-            Assert.That(c3.Previouses, Is.EqualTo(new[] { c1, c2 }));
-            Assert.That(c3.PreviousesWithSelf, Is.EqualTo(new[] { c1, c2, c3 }));
-            Assert.That(c3.ReversePreviouses, Is.EqualTo(new[] { c2, c1 }));
-            Assert.That(c3.ReversePreviousesWithSelf, Is.EqualTo(new[] { c3, c2, c1 }));
+            Assert.That(c3.Ancestors(), Is.EqualTo(new[] { node }));
+            Assert.That(c3.Children(), Is.EqualTo(new[] { d1, d2 }));
+            Assert.That(c3.NextsFromSelf(), Is.EqualTo(new[] { c4 }));
+            Assert.That(c3.NextsFromLast(), Is.EqualTo(new[] { c4 }));
+            Assert.That(c3.NextsFromSelfWithSelf(), Is.EqualTo(new[] { c3, c4 }));
+            Assert.That(c3.NextsFromLastWithSelf(), Is.EqualTo(new[] { c4, c3 }));
+            Assert.That(c3.PrevsFromFirst(), Is.EqualTo(new[] { c1, c2 }));
+            Assert.That(c3.PrevsFromFirstWithSelf(), Is.EqualTo(new[] { c1, c2, c3 }));
+            Assert.That(c3.PrevsFromSelf(), Is.EqualTo(new[] { c2, c1 }));
+            Assert.That(c3.PrevsFromSelfWithSelf(), Is.EqualTo(new[] { c3, c2, c1 }));
 
-            Assert.That(c1.Children, Is.EqualTo(new StringNode[0]));
-            Assert.That(c1.Nexts, Is.EqualTo(new[] { c2, c3, c4 }));
-            Assert.That(c1.ReverseNexts, Is.EqualTo(new[] { c4, c3, c2 }));
-            Assert.That(c1.NextsWithSelf, Is.EqualTo(new[] { c1, c2, c3, c4 }));
-            Assert.That(c1.ReverseNextsWithSelf, Is.EqualTo(new[] { c4, c3, c2, c1 }));
-            Assert.That(c1.Previouses, Is.EqualTo(new StringNode[0]));
-            Assert.That(c1.PreviousesWithSelf, Is.EqualTo(new[] { c1 }));
-            Assert.That(c1.ReversePreviouses, Is.EqualTo(new StringNode[0]));
-            Assert.That(c1.ReversePreviousesWithSelf, Is.EqualTo(new[] { c1 }));
+            Assert.That(c1.Ancestors(), Is.EqualTo(new[] { node }));
+            Assert.That(c1.Children(), Is.EqualTo(new StringNode[0]));
+            Assert.That(c1.NextsFromSelf(), Is.EqualTo(new[] { c2, c3, c4 }));
+            Assert.That(c1.NextsFromLast(), Is.EqualTo(new[] { c4, c3, c2 }));
+            Assert.That(c1.NextsFromSelfWithSelf(), Is.EqualTo(new[] { c1, c2, c3, c4 }));
+            Assert.That(c1.NextsFromLastWithSelf(), Is.EqualTo(new[] { c4, c3, c2, c1 }));
+            Assert.That(c1.PrevsFromFirst(), Is.EqualTo(new StringNode[0]));
+            Assert.That(c1.PrevsFromFirstWithSelf(), Is.EqualTo(new[] { c1 }));
+            Assert.That(c1.PrevsFromSelf(), Is.EqualTo(new StringNode[0]));
+            Assert.That(c1.PrevsFromSelfWithSelf(), Is.EqualTo(new[] { c1 }));
+        }
+    }
+
+    public static class StringExtensionForTest {
+        public static string NormalizeNewLine(this string text) {
+            return text.Replace("\n", Environment.NewLine);
         }
     }
 }

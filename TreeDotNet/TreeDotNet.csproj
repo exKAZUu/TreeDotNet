@@ -105,8 +105,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="INode.cs" />
+    <Compile Include="NamedNode.cs" />
     <Compile Include="Node.cs" />
+    <Compile Include="NodeExtensions.cs" />
     <Compile Include="StringNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

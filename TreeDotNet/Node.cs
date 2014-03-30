@@ -28,13 +28,13 @@ namespace TreeDotNet {
     /// </summary>
     /// <typeparam name="TNode">The type of this class.</typeparam>
     /// <typeparam name="T">The type of elements in the list.</typeparam>
-    public class Node<TNode, T> : INode<T>
+    public class Node<TNode, T>
             where TNode : Node<TNode, T> {
         /// <summary>
         /// Initialzies a new instance of the Node class with a default value.
         /// </summary>
         protected Node() {
-            CyclicPrevious = This;
+            CyclicPrev = This;
             CyclicNext = This;
         }
 
@@ -42,7 +42,7 @@ namespace TreeDotNet {
         /// Initialzies a new instance of the Node class with the specified value.
         /// </summary>
         protected Node(T value) {
-            CyclicPrevious = This;
+            CyclicPrev = This;
             CyclicNext = This;
             Value = value;
         }
@@ -65,7 +65,7 @@ namespace TreeDotNet {
         /// Gets the last sibling node or the current node.
         /// </summary>
         public TNode LastSibling {
-            get { return Parent != null ? Parent.FirstChild.CyclicPrevious : This; }
+            get { return Parent != null ? Parent.FirstChild.CyclicPrev : This; }
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace TreeDotNet {
         /// Gets the last child node.
         /// </summary>
         public TNode LastChild {
-            get { return FirstChild == null ? null : FirstChild.CyclicPrevious; }
+            get { return FirstChild == null ? null : FirstChild.CyclicPrev; }
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace TreeDotNet {
         /// <summary>
         /// Gets the previous node.
         /// </summary>
-        public TNode CyclicPrevious { get; private set; }
+        public TNode CyclicPrev { get; private set; }
 
         /// <summary>
         /// Gets the next node.
@@ -98,8 +98,8 @@ namespace TreeDotNet {
         /// <summary>
         /// Gets the previous node or null.
         /// </summary>
-        public TNode Previous {
-            get { return CyclicPrevious != LastSibling ? CyclicPrevious : null; }
+        public TNode Prev {
+            get { return CyclicPrev != LastSibling ? CyclicPrev : null; }
         }
 
         /// <summary>
@@ -114,107 +114,116 @@ namespace TreeDotNet {
         /// </summary>
         protected T Value { get; set; }
 
-        public IEnumerable<TNode> Children {
-            get {
-                var node = FirstChild;
-                if (node == null) {
-                    yield break;
-                }
-                var terminal = node;
-                do {
-                    yield return node;
-                    node = node.CyclicNext;
-                } while (node != terminal);
+        #region Traversal
+
+        public IEnumerable<TNode> Ancestors() {
+            var node = This.Parent;
+            while (node != null) {
+                yield return node;
+                node = node.Parent;
             }
         }
 
-        public IEnumerable<TNode> Nexts {
-            get {
-                var node = CyclicNext;
-                var terminal = FirstSibling;
-                while (node != terminal) {
-                    yield return node;
-                    node = node.CyclicNext;
-                }
+        public IEnumerable<TNode> AncestorsWithSelf() {
+            return Enumerable.Repeat(This, 1).Concat(Ancestors());
+        }
+
+        public IEnumerable<TNode> Children() {
+            var node = FirstChild;
+            if (node == null) {
+                yield break;
+            }
+            var terminal = node;
+            do {
+                yield return node;
+                node = node.CyclicNext;
+            } while (node != terminal);
+        }
+
+        public IEnumerable<TNode> ChildrenWithSelf() {
+            return Enumerable.Repeat(This, 1).Concat(Children());
+        }
+
+        public IEnumerable<TNode> NextsFromSelf() {
+            var node = CyclicNext;
+            var terminal = FirstSibling;
+            while (node != terminal) {
+                yield return node;
+                node = node.CyclicNext;
             }
         }
 
-        public IEnumerable<TNode> NextsWithSelf {
-            get {
-                var node = This;
-                var terminal = FirstSibling;
-                do {
-                    yield return node;
-                    node = node.CyclicNext;
-                } while (node != terminal);
+        public IEnumerable<TNode> NextsFromSelfWithSelf() {
+            return Enumerable.Repeat(This, 1).Concat(NextsFromSelf());
+        }
+
+        public IEnumerable<TNode> NextsFromLast() {
+            var node = LastSibling;
+            var terminal = This;
+            while (node != terminal) {
+                yield return node;
+                node = node.CyclicPrev;
             }
         }
 
-        public IEnumerable<TNode> ReverseNexts {
-            get {
-                var node = LastSibling;
-                var terminal = This;
-                while (node != terminal) {
-                    yield return node;
-                    node = node.CyclicPrevious;
-                }
+        public IEnumerable<TNode> NextsFromLastWithSelf() {
+            return NextsFromLast().Concat(Enumerable.Repeat(This, 1));
+        }
+
+        public IEnumerable<TNode> PrevsFromFirst() {
+            var node = FirstSibling;
+            var terminal = This;
+            while (node != terminal) {
+                yield return node;
+                node = node.CyclicNext;
             }
         }
 
-        public IEnumerable<TNode> ReverseNextsWithSelf {
-            get {
-                var node = FirstSibling;
-                var terminal = This;
-                do {
-                    node = node.CyclicPrevious;
-                    yield return node;
-                } while (node != terminal);
-            }
+        public IEnumerable<TNode> PrevsFromFirstWithSelf() {
+            return PrevsFromFirst().Concat(Enumerable.Repeat(This, 1));
         }
 
-        public IEnumerable<TNode> Previouses {
-            get {
-                var node = FirstSibling;
-                var terminal = This;
-                while (node != terminal) {
-                    yield return node;
-                    node = node.CyclicNext;
-                }
-            }
-        }
-
-        public IEnumerable<TNode> PreviousesWithSelf {
-            get {
-                var node = LastSibling;
-                var terminal = This;
-                do {
-                    node = node.CyclicNext;
-                    yield return node;
-                } while (node != terminal);
-            }
-        }
-
-        public IEnumerable<TNode> ReversePreviouses {
-            get {
-                var node = CyclicPrevious;
+        public IEnumerable<TNode> PrevsFromSelf() {
+                var node = CyclicPrev;
                 var terminal = LastSibling;
                 while (node != terminal) {
                     yield return node;
-                    node = node.CyclicPrevious;
+                    node = node.CyclicPrev;
+                }
+        }
+
+        public IEnumerable<TNode> PrevsFromSelfWithSelf() {
+            return Enumerable.Repeat(This, 1).Concat(PrevsFromSelf());
+        }
+
+        public IEnumerable<TNode> Descendants() {
+            var start = This;
+            var cursor = start;
+            if (cursor.FirstChild != null) {
+                cursor = cursor.FirstChild;
+                yield return cursor;
+                while (true) {
+                    while (cursor.FirstChild != null) {
+                        cursor = cursor.FirstChild;
+                        yield return cursor;
+                    }
+                    while (cursor.Next == null) {
+                        cursor = cursor.Parent;
+                        if (cursor == start) {
+                            yield break;
+                        }
+                    }
+                    cursor = cursor.CyclicNext;
+                    yield return cursor;
                 }
             }
         }
 
-        public IEnumerable<TNode> ReversePreviousesWithSelf {
-            get {
-                var node = This;
-                var terminal = LastSibling;
-                do {
-                    yield return node;
-                    node = node.CyclicPrevious;
-                } while (node != terminal);
-            }
+        public IEnumerable<TNode> DescendantsAndSelf() {
+            return Enumerable.Repeat(This, 1).Concat(Descendants());
         }
+
+        #endregion
 
         public TNode AddPrevious(TNode node) {
             Contract.Requires(node != null);
@@ -248,9 +257,9 @@ namespace TreeDotNet {
         private TNode AddPreviousIgnoringFirstChild(TNode node) {
             node.Parent = This.Parent;
             node.CyclicNext = This;
-            node.CyclicPrevious = CyclicPrevious;
-            CyclicPrevious.CyclicNext = node;
-            CyclicPrevious = node;
+            node.CyclicPrev = CyclicPrev;
+            CyclicPrev.CyclicNext = node;
+            CyclicPrev = node;
             return node;
         }
 
@@ -265,40 +274,12 @@ namespace TreeDotNet {
             if (second == null) {
                 node.Parent = This;
                 node.CyclicNext = node;
-                node.CyclicPrevious = node;
+                node.CyclicPrev = node;
                 FirstChild = node;
             } else {
                 second.AddPreviousIgnoringFirstChild(node);
             }
             return node;
-        }
-
-        public IEnumerable<TNode> Descendants() {
-            return DescendantsAndSelf().Skip(1);
-        }
-
-        public IEnumerable<TNode> DescendantsAndSelf() {
-            var start = This;
-            var cursor = start;
-            yield return cursor;
-            if (cursor.FirstChild != null) {
-                cursor = cursor.FirstChild;
-                yield return cursor;
-                while (true) {
-                    while (cursor.FirstChild != null) {
-                        cursor = cursor.FirstChild;
-                        yield return cursor;
-                    }
-                    while (cursor.Next == null) {
-                        cursor = cursor.Parent;
-                        if (cursor == start) {
-                            yield break;
-                        }
-                    }
-                    cursor = cursor.CyclicNext;
-                    yield return cursor;
-                }
-            }
         }
 
         public override String ToString() {
@@ -316,7 +297,7 @@ namespace TreeDotNet {
                 builder.Append("  ");
             }
             builder.AppendLine(!Equals(node.Value, null) ? node.Value.ToString() : "");
-            foreach (var child in node.Children) {
+            foreach (var child in node.Children()) {
                 ToStringPrivate(child, depth + 1, builder);
             }
         }
