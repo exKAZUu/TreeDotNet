@@ -107,6 +107,9 @@ namespace TreeDotNet.Tests {
 
             Assert.That(c3.Ancestors(), Is.EqualTo(new[] { node }));
             Assert.That(c3.Children(), Is.EqualTo(new[] { d1, d2 }));
+            Assert.That(c3.ChildrenCount, Is.EqualTo(2));
+            Assert.That(c3.IsInner, Is.EqualTo(true));
+            Assert.That(c3.IsTerminal, Is.EqualTo(false));
             Assert.That(c3.NextsFromSelf(), Is.EqualTo(new[] { c4 }));
             Assert.That(c3.NextsFromLast(), Is.EqualTo(new[] { c4 }));
             Assert.That(c3.NextsFromSelfWithSelf(), Is.EqualTo(new[] { c3, c4 }));
@@ -118,6 +121,9 @@ namespace TreeDotNet.Tests {
 
             Assert.That(c1.Ancestors(), Is.EqualTo(new[] { node }));
             Assert.That(c1.Children(), Is.EqualTo(new StringNode[0]));
+            Assert.That(c1.ChildrenCount, Is.EqualTo(0));
+            Assert.That(c1.IsInner, Is.EqualTo(false));
+            Assert.That(c1.IsTerminal, Is.EqualTo(true));
             Assert.That(c1.NextsFromSelf(), Is.EqualTo(new[] { c2, c3, c4 }));
             Assert.That(c1.NextsFromLast(), Is.EqualTo(new[] { c4, c3, c2 }));
             Assert.That(c1.NextsFromSelfWithSelf(), Is.EqualTo(new[] { c1, c2, c3, c4 }));

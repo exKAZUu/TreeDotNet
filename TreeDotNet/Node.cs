@@ -110,12 +110,29 @@ namespace TreeDotNet {
         }
 
         /// <summary>
-        /// Gets the value.
+        /// Gets and sets the value.
         /// </summary>
         protected T Value { get; set; }
 
+        /// <summary>
+        /// Gets the number of children nodes.
+        /// </summary>
         public int ChildrenCount {
             get { return Children().Count(); }
+        }
+
+        /// <summary>
+        /// Gets the boolean value indicating whether this is an inner node.
+        /// </summary>
+        public bool IsInner {
+            get { return FirstChild != null; }
+        }
+
+        /// <summary>
+        /// Gets the boolean value indicating whether this is a terminal node.
+        /// </summary>
+        public bool IsTerminal {
+            get { return FirstChild == null; }
         }
 
         #region Traversal
