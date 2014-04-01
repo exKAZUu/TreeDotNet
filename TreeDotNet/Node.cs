@@ -121,20 +121,6 @@ namespace TreeDotNet {
             get { return Children().Count(); }
         }
 
-        /// <summary>
-        /// Gets the boolean value indicating whether this is an inner node.
-        /// </summary>
-        public bool IsInner {
-            get { return FirstChild != null; }
-        }
-
-        /// <summary>
-        /// Gets the boolean value indicating whether this is a terminal node.
-        /// </summary>
-        public bool IsTerminal {
-            get { return FirstChild == null; }
-        }
-
         #region Traversal
 
         public IEnumerable<TNode> Ancestors() {
@@ -242,10 +228,6 @@ namespace TreeDotNet {
 
         public IEnumerable<TNode> DescendantsAndSelf() {
             return Enumerable.Repeat(This, 1).Concat(Descendants());
-        }
-
-        public IEnumerable<TNode> DescendantTerminals() {
-            return Descendants().Where(node => node.FirstChild == null);
         }
 
         #endregion

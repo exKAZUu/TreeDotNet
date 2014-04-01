@@ -27,9 +27,15 @@ namespace TreeDotNet {
     /// <typeparam name="T">The type of elements in the list.</typeparam>
     public class NamedNode<TNode, T> : Node<TNode, T>
             where TNode : NamedNode<TNode, T> {
+        protected NamedNode(T node) : base(node) {}
+
         public string Name { get; protected set; }
 
         #region Traversal
+
+        public TNode Child(string name) {
+            return Children().FirstOrDefault(node => node.Name == name);
+        }
 
         public IEnumerable<TNode> Ancestors(string name) {
             return Ancestors().Where(node => node.Name == name);
@@ -37,10 +43,6 @@ namespace TreeDotNet {
 
         public IEnumerable<TNode> AncestorsWithSelf(string name) {
             return AncestorsWithSelf().Where(node => node.Name == name);
-        }
-
-        public TNode Child(string name) {
-            return Children().FirstOrDefault(node => node.Name == name);
         }
 
         public IEnumerable<TNode> Children(string name) {

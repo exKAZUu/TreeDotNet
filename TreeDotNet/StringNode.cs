@@ -17,7 +17,7 @@
 #endregion
 
 namespace TreeDotNet {
-    public class StringNode : Node<StringNode, string> {
+    public class StringNode : NamedNode<StringNode, string> {
         public new string Value {
             get { return base.Value; }
             set { base.Value = value; }
