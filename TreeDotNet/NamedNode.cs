@@ -27,6 +27,8 @@ namespace TreeDotNet {
     /// <typeparam name="T">The type of elements in the list.</typeparam>
     public class NamedNode<TNode, T> : Node<TNode, T>
             where TNode : NamedNode<TNode, T> {
+        protected NamedNode() {}
+
         protected NamedNode(T node) : base(node) {}
 
         public string Name { get; protected set; }
