@@ -124,15 +124,15 @@ namespace TreeDotNet {
         #region Traversal
 
         public IEnumerable<TNode> Ancestors() {
-            var node = This.Parent;
-            while (node != null) {
-                yield return node;
-                node = node.Parent;
-            }
+            return AncestorsAndSelf().Skip(1);
         }
 
-        public IEnumerable<TNode> AncestorsWithSelf() {
-            return Enumerable.Repeat(This, 1).Concat(Ancestors());
+        public IEnumerable<TNode> AncestorsAndSelf() {
+            var node = This;
+            do {
+                yield return node;
+                node = node.Parent;
+            } while (node != null);
         }
 
         public IEnumerable<TNode> Children() {
@@ -147,7 +147,7 @@ namespace TreeDotNet {
             } while (node != terminal);
         }
 
-        public IEnumerable<TNode> ChildrenWithSelf() {
+        public IEnumerable<TNode> ChildrenAndSelf() {
             return Enumerable.Repeat(This, 1).Concat(Children());
         }
 
@@ -160,7 +160,7 @@ namespace TreeDotNet {
             }
         }
 
-        public IEnumerable<TNode> NextsFromSelfWithSelf() {
+        public IEnumerable<TNode> NextsFromSelfAndSelf() {
             return Enumerable.Repeat(This, 1).Concat(NextsFromSelf());
         }
 
@@ -173,7 +173,7 @@ namespace TreeDotNet {
             }
         }
 
-        public IEnumerable<TNode> NextsFromLastWithSelf() {
+        public IEnumerable<TNode> NextsFromLastAndSelf() {
             return NextsFromLast().Concat(Enumerable.Repeat(This, 1));
         }
 
@@ -186,7 +186,7 @@ namespace TreeDotNet {
             }
         }
 
-        public IEnumerable<TNode> PrevsFromFirstWithSelf() {
+        public IEnumerable<TNode> PrevsFromFirstAndSelf() {
             return PrevsFromFirst().Concat(Enumerable.Repeat(This, 1));
         }
 
@@ -199,7 +199,7 @@ namespace TreeDotNet {
             }
         }
 
-        public IEnumerable<TNode> PrevsFromSelfWithSelf() {
+        public IEnumerable<TNode> PrevsFromSelfAndSelf() {
             return Enumerable.Repeat(This, 1).Concat(PrevsFromSelf());
         }
 
@@ -228,6 +228,142 @@ namespace TreeDotNet {
 
         public IEnumerable<TNode> DescendantsAndSelf() {
             return Enumerable.Repeat(This, 1).Concat(Descendants());
+        }
+
+        public IEnumerable<TNode> Siblings() {
+            var first = FirstSibling;
+            var node = first;
+            while (node != this) {
+                yield return node;
+                node = node.CyclicNext;
+            }
+            node = node.CyclicNext;
+            while (node != first) {
+                yield return node;
+                node = node.CyclicNext;
+            }
+        }
+
+        public IEnumerable<TNode> SiblingsAndSelf() {
+            var first = FirstSibling;
+            var node = first;
+            do {
+                yield return node;
+                node = node.CyclicNext;
+            } while (node != first);
+        }
+
+        public IEnumerable<TNode> AncestorsAndSiblingsAfterSelf() {
+            var node = This;
+            do {
+                foreach (var e in node.NextsFromSelf()) {
+                    yield return e;
+                }
+                node = node.Parent;
+            } while (node != null);
+        }
+
+        public IEnumerable<TNode> AncestorsAndSiblingsAfterSelfAndSelf() {
+            return Enumerable.Repeat(This, 1).Concat(AncestorsAndSiblingsAfterSelf());
+        }
+
+        public IEnumerable<TNode> AncestorsAndSiblingsBeforeSelf() {
+            return AncestorsAndSiblingsBeforeSelfAndSelf().Skip(1);
+        }
+
+        public IEnumerable<TNode> AncestorsAndSiblingsBeforeSelfAndSelf() {
+            var node = This;
+            do {
+                foreach (var e in node.PrevsFromSelfAndSelf()) {
+                    yield return e;
+                }
+                node = node.Parent;
+            } while (node != null);
+        }
+
+        public IEnumerable<TNode> AncestorsOfSingle() {
+            return AncestorsOfSingleAndSelf().Skip(1);
+        }
+
+        public IEnumerable<TNode> AncestorsOfSingleAndSelf() {
+            var node = This;
+            do {
+                yield return node;
+                node = node.Parent;
+            } while (node != null && node == node.CyclicNext);
+        }
+
+        public IEnumerable<TNode> DescendantsOfSingle() {
+            return DescendantsOfSingleAndSelf().Skip(1);
+        }
+
+        public IEnumerable<TNode> DescendantsOfSingleAndSelf() {
+            var node = This;
+            do {
+                yield return node;
+                node = node.FirstChild;
+            } while (node != null && node == node.CyclicNext);
+        }
+
+        public IEnumerable<TNode> DescendantsOfFirstChild() {
+            return DescendantsOfFirstChildAndSelf().Skip(1);
+        }
+
+        public IEnumerable<TNode> DescendantsOfFirstChildAndSelf() {
+            var node = This;
+            do {
+                yield return node;
+                node = node.FirstChild;
+            } while (node != null);
+        }
+
+        public IEnumerable<TNode> Ancestors(int inclusiveDepth) {
+            return AncestorsAndSelf(inclusiveDepth).Skip(1);
+        }
+
+        public IEnumerable<TNode> AncestorsAndSelf(int inclusiveDepth) {
+            return AncestorsAndSelf().Take(inclusiveDepth + 1);
+        }
+
+        public IEnumerable<TNode> Descendants(int inclusiveDepth) {
+            var start = This;
+            var cursor = start;
+            if (cursor.FirstChild != null && inclusiveDepth > 0) {
+                cursor = cursor.FirstChild;
+                inclusiveDepth--;
+                yield return cursor;
+                while (true) {
+                    while (cursor.FirstChild != null && inclusiveDepth > 0) {
+                        cursor = cursor.FirstChild;
+                        inclusiveDepth--;
+                        yield return cursor;
+                    }
+                    while (cursor.Next == null) {
+                        cursor = cursor.Parent;
+                        inclusiveDepth++;
+                        if (cursor == start) {
+                            yield break;
+                        }
+                    }
+                    cursor = cursor.CyclicNext;
+                    yield return cursor;
+                }
+            }
+        }
+
+        public IEnumerable<TNode> DescendantsAndSelf(int inclusiveDepth) {
+            return Enumerable.Repeat(This, 1).Concat(Descendants(inclusiveDepth));
+        }
+
+        public IEnumerable<TNode> Siblings(int inclusiveEachLength) {
+            return PrevsFromSelf().Take(inclusiveEachLength).Reverse()
+                    .Concat(NextsFromSelf().Take(inclusiveEachLength));
+        }
+
+        public IEnumerable<TNode> SiblingsAndSelf(int inclusiveEachLength) {
+            return PrevsFromSelf().Take(inclusiveEachLength).Reverse()
+                    .Concat(Enumerable.Repeat(This, 1))
+                    .Concat(NextsFromSelf().Take(inclusiveEachLength));
         }
 
         #endregion
