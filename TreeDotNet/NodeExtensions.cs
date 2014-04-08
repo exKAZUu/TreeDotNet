@@ -117,14 +117,14 @@ namespace TreeDotNet {
             return self.SelectMany(node => node.AncestorsAndSiblingsBeforeSelfAndSelf());
         }
 
-        public static IEnumerable<TNode> AncestorsOfSingle<TNode, T>(
+        public static IEnumerable<TNode> AncestorsWithSingleChild<TNode, T>(
                 this IEnumerable<Node<TNode, T>> self) where TNode : Node<TNode, T> {
-            return self.SelectMany(node => node.AncestorsOfSingle());
+            return self.SelectMany(node => node.AncestorsWithSingleChild());
         }
 
-        public static IEnumerable<TNode> AncestorsOfSingleAndSelf<TNode, T>(
+        public static IEnumerable<TNode> AncestorsWithSingleChildAndSelf<TNode, T>(
                 this IEnumerable<Node<TNode, T>> self) where TNode : Node<TNode, T> {
-            return self.SelectMany(node => node.AncestorsOfSingleAndSelf());
+            return self.SelectMany(node => node.AncestorsWithSingleChildAndSelf());
         }
 
         public static IEnumerable<TNode> DescendantsOfSingle<TNode, T>(
@@ -301,16 +301,16 @@ namespace TreeDotNet {
             return self.SelectMany(node => node.AncestorsAndSiblingsBeforeSelfAndSelf(name));
         }
 
-        public static IEnumerable<TNode> AncestorsOfSingle<TNode, T>(
+        public static IEnumerable<TNode> AncestorsWithSingleChild<TNode, T>(
                 this IEnumerable<NamedNode<TNode, T>> self, string name)
                 where TNode : NamedNode<TNode, T> {
-            return self.SelectMany(node => node.AncestorsOfSingle(name));
+            return self.SelectMany(node => node.AncestorsWithSingleChild(name));
         }
 
-        public static IEnumerable<TNode> AncestorsOfSingleAndSelf<TNode, T>(
+        public static IEnumerable<TNode> AncestorsWithSingleChildAndSelf<TNode, T>(
                 this IEnumerable<NamedNode<TNode, T>> self, string name)
                 where TNode : NamedNode<TNode, T> {
-            return self.SelectMany(node => node.AncestorsOfSingleAndSelf(name));
+            return self.SelectMany(node => node.AncestorsWithSingleChildAndSelf(name));
         }
 
         public static IEnumerable<TNode> DescendantsOfSingle<TNode, T>(

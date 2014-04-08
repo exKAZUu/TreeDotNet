@@ -212,6 +212,8 @@ namespace TreeDotNet.Tests {
             var e = new StringNode("e");
             var f = new StringNode("f");
             var g = new StringNode("g");
+            // a - b - c - d - e
+            //   - g         - f
             a.AddFirst(b);
             a.AddLast(g);
             b.AddFirst(c);
@@ -228,18 +230,22 @@ namespace TreeDotNet.Tests {
             string.Join("", c.DescendantsOfSingleAndSelf().Select(n => n.Value)).Should()
                     .Be("cd");
 
-            string.Join("", b.AncestorsOfSingle().Select(n => n.Value)).Should()
-                    .Be("a");
-            string.Join("", b.AncestorsOfSingleAndSelf().Select(n => n.Value)).Should()
-                    .Be("ba");
-            string.Join("", c.AncestorsOfSingle().Select(n => n.Value)).Should()
+            string.Join("", b.AncestorsWithSingleChild().Select(n => n.Value)).Should()
                     .Be("");
-            string.Join("", c.AncestorsOfSingleAndSelf().Select(n => n.Value)).Should()
-                    .Be("c");
-            string.Join("", d.AncestorsOfSingle().Select(n => n.Value)).Should()
-                    .Be("c");
-            string.Join("", d.AncestorsOfSingleAndSelf().Select(n => n.Value)).Should()
-                    .Be("dc");
+            string.Join("", b.AncestorsWithSingleChildAndSelf().Select(n => n.Value)).Should()
+                    .Be("b");
+            string.Join("", c.AncestorsWithSingleChild().Select(n => n.Value)).Should()
+                    .Be("b");
+            string.Join("", c.AncestorsWithSingleChildAndSelf().Select(n => n.Value)).Should()
+                    .Be("cb");
+            string.Join("", d.AncestorsWithSingleChild().Select(n => n.Value)).Should()
+                    .Be("cb");
+            string.Join("", d.AncestorsWithSingleChildAndSelf().Select(n => n.Value)).Should()
+                    .Be("dcb");
+            string.Join("", e.AncestorsWithSingleChild().Select(n => n.Value)).Should()
+                    .Be("");
+            string.Join("", e.AncestorsWithSingleChildAndSelf().Select(n => n.Value)).Should()
+                    .Be("e");
         }
 
         [Test]

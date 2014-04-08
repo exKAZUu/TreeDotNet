@@ -119,12 +119,12 @@ namespace TreeDotNet {
             return AncestorsAndSiblingsBeforeSelfAndSelf().Where(node => node.Name == name);
         }
 
-        public IEnumerable<TNode> AncestorsOfSingle(string name) {
-            return AncestorsOfSingle().Where(node => node.Name == name);
+        public IEnumerable<TNode> AncestorsWithSingleChild(string name) {
+            return AncestorsWithSingleChild().Where(node => node.Name == name);
         }
 
-        public IEnumerable<TNode> AncestorsOfSingleAndSelf(string name) {
-            return AncestorsOfSingleAndSelf().Where(node => node.Name == name);
+        public IEnumerable<TNode> AncestorsWithSingleChildAndSelf(string name) {
+            return AncestorsWithSingleChildAndSelf().Where(node => node.Name == name);
         }
 
         public IEnumerable<TNode> DescendantsOfSingle(string name) {

@@ -123,6 +123,10 @@ namespace TreeDotNet {
 
         #region Traversal
 
+        public TNode ChildAtOrNull(int index) {
+            return Children().ElementAtOrDefault(index);
+        }
+
         public IEnumerable<TNode> Ancestors() {
             return AncestorsAndSelf().Skip(1);
         }
@@ -281,16 +285,25 @@ namespace TreeDotNet {
             } while (node != null);
         }
 
-        public IEnumerable<TNode> AncestorsOfSingle() {
-            return AncestorsOfSingleAndSelf().Skip(1);
+        public IEnumerable<TNode> AncestorsWithSingleChild() {
+            var node = This;
+            if (node == node.CyclicNext) {
+                do {
+                    node = node.Parent;
+                    yield return node;
+                } while (node != null && node == node.CyclicNext);
+            }
         }
 
-        public IEnumerable<TNode> AncestorsOfSingleAndSelf() {
+        public IEnumerable<TNode> AncestorsWithSingleChildAndSelf() {
             var node = This;
-            do {
-                yield return node;
-                node = node.Parent;
-            } while (node != null && node == node.CyclicNext);
+            yield return node;
+            if (node == node.CyclicNext) {
+                do {
+                    node = node.Parent;
+                    yield return node;
+                } while (node != null && node == node.CyclicNext);
+            }
         }
 
         public IEnumerable<TNode> DescendantsOfSingle() {
