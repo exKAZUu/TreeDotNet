@@ -74,19 +74,19 @@ namespace TreeDotNet.Tests {
 
         [Test]
         public void CreateTreeAndTraverse() {
-            var a = new StringNode("a");
-            var b = a.AddFirst(new StringNode("b"));
-            var c = a.AddLast(new StringNode("c"));
-            var d = a.AddFirst(new StringNode("d"));
-            var e = a.AddFirst(new StringNode("e"));
-            var f = b.AddFirst(new StringNode("f"));
-            var g = b.AddFirst(new StringNode("g"));
-            var h = g.AddLast("h");
-            var i = f.AddLast("i");
-            var j = h.AddNext("j");
-            var k = h.AddPrevious("k");
-            var l = i.AddPrevious("l");
-            var m = i.AddNext("m");
+            var a = new StringNode("a");    // 1
+            var b = a.AddFirst(new StringNode("b"));    // 2
+            var c = a.AddLast(new StringNode("c"));     // 2
+            var d = a.AddFirst(new StringNode("d"));    // 2
+            var e = a.AddFirst(new StringNode("e"));    // 2
+            var f = b.AddFirst(new StringNode("f"));    // 3
+            var g = b.AddFirst(new StringNode("g"));    // 3
+            var h = g.AddLast("h");     // 4
+            var i = f.AddLast("i");     // 4
+            var j = h.AddNext("j");     // 4
+            var k = h.AddPrevious("k"); // 4
+            var l = i.AddPrevious("l"); // 4
+            var m = i.AddNext("m");     // 4
             a.ToString()
                     .Should()
                     .Be(
@@ -201,6 +201,13 @@ namespace TreeDotNet.Tests {
             Assert.That(e.PrevsFromSelfAndSelf(), Is.EqualTo(new[] { e }));
             Assert.That(e.DescendantsOfFirstChild(), Is.EqualTo(new StringNode[0]));
             Assert.That(e.DescendantsOfFirstChildAndSelf(), Is.EqualTo(new[] { e }));
+
+            g.Remove().Should().BeTrue();
+            string.Join("", a.Descendants().Select(n => n.Value)).Should().Be("edbflimc");
+            f.Remove().Should().BeTrue();
+            string.Join("", a.Descendants().Select(n => n.Value)).Should().Be("edbc");
+            g.Remove().Should().BeFalse();
+            f.Remove().Should().BeFalse();
         }
 
         [Test]

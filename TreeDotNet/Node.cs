@@ -438,6 +438,25 @@ namespace TreeDotNet {
             return node;
         }
 
+        public bool Remove() {
+            if (Parent == null) {
+                return false;
+            }
+            if (CyclicNext != this) {
+                if (Parent.FirstChild == this) {
+                    Parent.FirstChild = CyclicNext;
+                }
+                CyclicPrev.CyclicNext = CyclicNext;
+                CyclicNext.CyclicPrev = CyclicPrev;
+            } else {
+                Parent.FirstChild = null;
+            }
+            CyclicNext = null;
+            CyclicPrev = null;
+            Parent = null;
+            return true;
+        }
+
         public override String ToString() {
             var builder = new StringBuilder();
             ToStringPrivate(This, 0, builder);
