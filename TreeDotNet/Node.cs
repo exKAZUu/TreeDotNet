@@ -31,7 +31,7 @@ namespace TreeDotNet {
     public class Node<TNode, T>
             where TNode : Node<TNode, T> {
         /// <summary>
-        /// Initialzies a new instance of the Node class with a default value.
+        /// Initializes a new instance of the Node class with a default value.
         /// </summary>
         protected Node() {
             CyclicPrev = This;
@@ -39,7 +39,7 @@ namespace TreeDotNet {
         }
 
         /// <summary>
-        /// Initialzies a new instance of the Node class with the specified value.
+        /// Initializes a new instance of the Node class with the specified value.
         /// </summary>
         protected Node(T value) {
             CyclicPrev = This;
