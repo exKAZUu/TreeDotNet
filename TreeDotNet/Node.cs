@@ -434,6 +434,10 @@ namespace TreeDotNet {
             return node;
         }
 
+        /// <summary>
+        /// Returns the action that add this node to restore the original tree removing this node.
+        /// </summary>
+        /// <returns>The action that add this node to restore the original tree</returns>
         public Action Remove() {
             if (Parent == null) {
                 return null;
