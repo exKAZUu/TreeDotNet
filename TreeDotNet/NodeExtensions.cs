@@ -22,11 +22,6 @@ namespace TreeDotNet {
             return self.SelectMany(node => node.Children());
         }
 
-        public static IEnumerable<TNode> ChildrenAndSelf<TNode, T>(
-                this IEnumerable<Node<TNode, T>> self) where TNode : Node<TNode, T> {
-            return self.SelectMany(node => node.ChildrenAndSelf());
-        }
-
         public static IEnumerable<TNode> NextsFromSelf<TNode, T>(
                 this IEnumerable<Node<TNode, T>> self)
                 where TNode : Node<TNode, T> {
@@ -197,12 +192,6 @@ namespace TreeDotNet {
                 this IEnumerable<NamedNode<TNode, T>> self, string name)
                 where TNode : NamedNode<TNode, T> {
             return self.SelectMany(node => node.Children(name));
-        }
-
-        public static IEnumerable<TNode> ChildrenAndSelf<TNode, T>(
-                this IEnumerable<NamedNode<TNode, T>> self, string name)
-                where TNode : NamedNode<TNode, T> {
-            return self.SelectMany(node => node.ChildrenAndSelf(name));
         }
 
         public static IEnumerable<TNode> NextsFromSelf<TNode, T>(

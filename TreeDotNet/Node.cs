@@ -27,30 +27,30 @@ namespace TreeDotNet {
     /// Represents a node instead of XElement.
     /// </summary>
     /// <typeparam name="TNode">The type of this class.</typeparam>
-    /// <typeparam name="T">The type of elements in the list.</typeparam>
-    public class Node<TNode, T>
-            where TNode : Node<TNode, T> {
+    /// <typeparam name="TValue">The type of elements in the list.</typeparam>
+    public class Node<TNode, TValue>
+            where TNode : Node<TNode, TValue> {
         /// <summary>
         /// Initializes a new instance of the Node class with a default value.
         /// </summary>
         protected Node() {
-            CyclicPrev = This;
-            CyclicNext = This;
+            CyclicPrev = ThisNode;
+            CyclicNext = ThisNode;
         }
 
         /// <summary>
         /// Initializes a new instance of the Node class with the specified value.
         /// </summary>
-        protected Node(T value) {
-            CyclicPrev = This;
-            CyclicNext = This;
+        protected Node(TValue value) {
+            CyclicPrev = ThisNode;
+            CyclicNext = ThisNode;
             Value = value;
         }
 
         /// <summary>
         /// The casted this instance for the simplicity.
         /// </summary>
-        private TNode This {
+        private TNode ThisNode {
             get { return (TNode)this; }
         }
 
@@ -58,14 +58,14 @@ namespace TreeDotNet {
         /// Gets the first sibling node or the current node.
         /// </summary>
         public TNode FirstSibling {
-            get { return Parent != null ? Parent.FirstChild : This; }
+            get { return Parent != null ? Parent.FirstChild : ThisNode; }
         }
 
         /// <summary>
         /// Gets the last sibling node or the current node.
         /// </summary>
         public TNode LastSibling {
-            get { return Parent != null ? Parent.FirstChild.CyclicPrev : This; }
+            get { return Parent != null ? Parent.FirstChild.CyclicPrev : ThisNode; }
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace TreeDotNet {
         /// Gets the last child node.
         /// </summary>
         public TNode LastChild {
-            get { return FirstChild == null ? null : FirstChild.CyclicPrev; }
+            get { return FirstChild != null ? FirstChild.CyclicPrev : null; }
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace TreeDotNet {
         /// <summary>
         /// Gets and sets the value.
         /// </summary>
-        protected T Value { get; set; }
+        protected TValue Value { get; set; }
 
         /// <summary>
         /// Gets the number of children nodes.
@@ -132,7 +132,7 @@ namespace TreeDotNet {
         }
 
         public IEnumerable<TNode> AncestorsAndSelf() {
-            var node = This;
+            var node = ThisNode;
             do {
                 yield return node;
                 node = node.Parent;
@@ -151,10 +151,6 @@ namespace TreeDotNet {
             } while (node != terminal);
         }
 
-        public IEnumerable<TNode> ChildrenAndSelf() {
-            return Enumerable.Repeat(This, 1).Concat(Children());
-        }
-
         public IEnumerable<TNode> NextsFromSelf() {
             var node = CyclicNext;
             var terminal = FirstSibling;
@@ -165,12 +161,12 @@ namespace TreeDotNet {
         }
 
         public IEnumerable<TNode> NextsFromSelfAndSelf() {
-            return Enumerable.Repeat(This, 1).Concat(NextsFromSelf());
+            return Enumerable.Repeat(ThisNode, 1).Concat(NextsFromSelf());
         }
 
         public IEnumerable<TNode> NextsFromLast() {
             var node = LastSibling;
-            var terminal = This;
+            var terminal = ThisNode;
             while (node != terminal) {
                 yield return node;
                 node = node.CyclicPrev;
@@ -178,12 +174,12 @@ namespace TreeDotNet {
         }
 
         public IEnumerable<TNode> NextsFromLastAndSelf() {
-            return NextsFromLast().Concat(Enumerable.Repeat(This, 1));
+            return NextsFromLast().Concat(Enumerable.Repeat(ThisNode, 1));
         }
 
         public IEnumerable<TNode> PrevsFromFirst() {
             var node = FirstSibling;
-            var terminal = This;
+            var terminal = ThisNode;
             while (node != terminal) {
                 yield return node;
                 node = node.CyclicNext;
@@ -191,7 +187,7 @@ namespace TreeDotNet {
         }
 
         public IEnumerable<TNode> PrevsFromFirstAndSelf() {
-            return PrevsFromFirst().Concat(Enumerable.Repeat(This, 1));
+            return PrevsFromFirst().Concat(Enumerable.Repeat(ThisNode, 1));
         }
 
         public IEnumerable<TNode> PrevsFromSelf() {
@@ -204,11 +200,11 @@ namespace TreeDotNet {
         }
 
         public IEnumerable<TNode> PrevsFromSelfAndSelf() {
-            return Enumerable.Repeat(This, 1).Concat(PrevsFromSelf());
+            return Enumerable.Repeat(ThisNode, 1).Concat(PrevsFromSelf());
         }
 
         public IEnumerable<TNode> Descendants() {
-            var start = This;
+            var start = ThisNode;
             var cursor = start;
             if (cursor.FirstChild != null) {
                 cursor = cursor.FirstChild;
@@ -231,7 +227,7 @@ namespace TreeDotNet {
         }
 
         public IEnumerable<TNode> DescendantsAndSelf() {
-            return Enumerable.Repeat(This, 1).Concat(Descendants());
+            return Enumerable.Repeat(ThisNode, 1).Concat(Descendants());
         }
 
         public IEnumerable<TNode> Siblings() {
@@ -258,7 +254,7 @@ namespace TreeDotNet {
         }
 
         public IEnumerable<TNode> AncestorsAndSiblingsAfterSelf() {
-            var node = This;
+            var node = ThisNode;
             do {
                 foreach (var e in node.NextsFromSelf()) {
                     yield return e;
@@ -268,7 +264,7 @@ namespace TreeDotNet {
         }
 
         public IEnumerable<TNode> AncestorsAndSiblingsAfterSelfAndSelf() {
-            return Enumerable.Repeat(This, 1).Concat(AncestorsAndSiblingsAfterSelf());
+            return Enumerable.Repeat(ThisNode, 1).Concat(AncestorsAndSiblingsAfterSelf());
         }
 
         public IEnumerable<TNode> AncestorsAndSiblingsBeforeSelf() {
@@ -276,7 +272,7 @@ namespace TreeDotNet {
         }
 
         public IEnumerable<TNode> AncestorsAndSiblingsBeforeSelfAndSelf() {
-            var node = This;
+            var node = ThisNode;
             do {
                 foreach (var e in node.PrevsFromSelfAndSelf()) {
                     yield return e;
@@ -286,7 +282,7 @@ namespace TreeDotNet {
         }
 
         public IEnumerable<TNode> AncestorsWithSingleChild() {
-            var node = This;
+            var node = ThisNode;
             if (node == node.CyclicNext) {
                 do {
                     node = node.Parent;
@@ -296,7 +292,7 @@ namespace TreeDotNet {
         }
 
         public IEnumerable<TNode> AncestorsWithSingleChildAndSelf() {
-            var node = This;
+            var node = ThisNode;
             yield return node;
             if (node == node.CyclicNext) {
                 do {
@@ -311,7 +307,7 @@ namespace TreeDotNet {
         }
 
         public IEnumerable<TNode> DescendantsOfSingleAndSelf() {
-            var node = This;
+            var node = ThisNode;
             do {
                 yield return node;
                 node = node.FirstChild;
@@ -323,7 +319,7 @@ namespace TreeDotNet {
         }
 
         public IEnumerable<TNode> DescendantsOfFirstChildAndSelf() {
-            var node = This;
+            var node = ThisNode;
             do {
                 yield return node;
                 node = node.FirstChild;
@@ -331,7 +327,7 @@ namespace TreeDotNet {
         }
 
         public IEnumerable<TNode> Ancestors(int inclusiveDepth) {
-            return AncestorsAndSelf(inclusiveDepth).Skip(1);
+            return Ancestors().Take(inclusiveDepth);
         }
 
         public IEnumerable<TNode> AncestorsAndSelf(int inclusiveDepth) {
@@ -339,7 +335,7 @@ namespace TreeDotNet {
         }
 
         public IEnumerable<TNode> Descendants(int inclusiveDepth) {
-            var start = This;
+            var start = ThisNode;
             var cursor = start;
             if (cursor.FirstChild != null && inclusiveDepth > 0) {
                 cursor = cursor.FirstChild;
@@ -365,7 +361,7 @@ namespace TreeDotNet {
         }
 
         public IEnumerable<TNode> DescendantsAndSelf(int inclusiveDepth) {
-            return Enumerable.Repeat(This, 1).Concat(Descendants(inclusiveDepth));
+            return Enumerable.Repeat(ThisNode, 1).Concat(Descendants(inclusiveDepth));
         }
 
         public IEnumerable<TNode> Siblings(int inclusiveEachLength) {
@@ -375,7 +371,7 @@ namespace TreeDotNet {
 
         public IEnumerable<TNode> SiblingsAndSelf(int inclusiveEachLength) {
             return PrevsFromSelf().Take(inclusiveEachLength).Reverse()
-                    .Concat(Enumerable.Repeat(This, 1))
+                    .Concat(Enumerable.Repeat(ThisNode, 1))
                     .Concat(NextsFromSelf().Take(inclusiveEachLength));
         }
 
@@ -385,7 +381,7 @@ namespace TreeDotNet {
             Contract.Requires(node != null);
             Contract.Requires(node.Parent == null);
             Contract.Requires(Parent != null);
-            if (Parent.FirstChild == This) {
+            if (Parent.FirstChild == this) {
                 Parent.FirstChild = node;
             }
             return AddPreviousIgnoringFirstChild(node);
@@ -395,7 +391,7 @@ namespace TreeDotNet {
             Contract.Requires(node != null);
             Contract.Requires(node.Parent == null);
             Contract.Requires(Parent != null);
-            return This.CyclicNext.AddPreviousIgnoringFirstChild(node);
+            return CyclicNext.AddPreviousIgnoringFirstChild(node);
         }
 
         public TNode AddFirst(TNode node) {
@@ -411,8 +407,8 @@ namespace TreeDotNet {
         }
 
         private TNode AddPreviousIgnoringFirstChild(TNode node) {
-            node.Parent = This.Parent;
-            node.CyclicNext = This;
+            node.Parent = Parent;
+            node.CyclicNext = ThisNode;
             node.CyclicPrev = CyclicPrev;
             CyclicPrev.CyclicNext = node;
             CyclicPrev = node;
@@ -428,7 +424,7 @@ namespace TreeDotNet {
         private TNode AddLastPrivate(TNode node) {
             var second = FirstChild;
             if (second == null) {
-                node.Parent = This;
+                node.Parent = ThisNode;
                 node.CyclicNext = node;
                 node.CyclicPrev = node;
                 FirstChild = node;
@@ -438,28 +434,38 @@ namespace TreeDotNet {
             return node;
         }
 
-        public bool Remove() {
+        public Action Remove() {
             if (Parent == null) {
-                return false;
+                return null;
             }
-            if (CyclicNext != this) {
+            var next = CyclicNext;
+            Action action;
+            if (next != this) {
+                CyclicPrev.CyclicNext = next;
+                next.CyclicPrev = CyclicPrev;
                 if (Parent.FirstChild == this) {
-                    Parent.FirstChild = CyclicNext;
+                    Parent.FirstChild = next;
+                    action = () => {
+                        next.Parent.FirstChild = ThisNode;
+                        next.AddPreviousIgnoringFirstChild(ThisNode);
+                    };
+                } else {
+                    action = () => next.AddPreviousIgnoringFirstChild(ThisNode);
                 }
-                CyclicPrev.CyclicNext = CyclicNext;
-                CyclicNext.CyclicPrev = CyclicPrev;
             } else {
-                Parent.FirstChild = null;
+                var parent = Parent;
+                parent.FirstChild = null;
+                action = () => parent.AddFirst(ThisNode);
             }
             CyclicNext = null;
             CyclicPrev = null;
             Parent = null;
-            return true;
+            return action;
         }
 
         public override String ToString() {
             var builder = new StringBuilder();
-            ToStringPrivate(This, 0, builder);
+            ToStringPrivate(ThisNode, 0, builder);
             return builder.ToString();
         }
 

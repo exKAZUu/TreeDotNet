@@ -24,12 +24,12 @@ namespace TreeDotNet {
     /// Represents a node with a name.
     /// </summary>
     /// <typeparam name="TNode">The type of this class.</typeparam>
-    /// <typeparam name="T">The type of elements in the list.</typeparam>
-    public class NamedNode<TNode, T> : Node<TNode, T>
-            where TNode : NamedNode<TNode, T> {
+    /// <typeparam name="TValue">The type of elements in the list.</typeparam>
+    public class NamedNode<TNode, TValue> : Node<TNode, TValue>
+            where TNode : NamedNode<TNode, TValue> {
         protected NamedNode() {}
 
-        protected NamedNode(T node) : base(node) {}
+        protected NamedNode(TValue node) : base(node) {}
 
         public string Name { get; protected set; }
 
@@ -49,10 +49,6 @@ namespace TreeDotNet {
 
         public IEnumerable<TNode> Children(string name) {
             return Children().Where(node => node.Name == name);
-        }
-
-        public IEnumerable<TNode> ChildrenAndSelf(string name) {
-            return ChildrenAndSelf().Where(node => node.Name == name);
         }
 
         public IEnumerable<TNode> NextsFromSelf(string name) {

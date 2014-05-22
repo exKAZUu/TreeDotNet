@@ -74,19 +74,19 @@ namespace TreeDotNet.Tests {
 
         [Test]
         public void CreateTreeAndTraverse() {
-            var a = new StringNode("a");    // 1
-            var b = a.AddFirst(new StringNode("b"));    // 2
-            var c = a.AddLast(new StringNode("c"));     // 2
-            var d = a.AddFirst(new StringNode("d"));    // 2
-            var e = a.AddFirst(new StringNode("e"));    // 2
-            var f = b.AddFirst(new StringNode("f"));    // 3
-            var g = b.AddFirst(new StringNode("g"));    // 3
-            var h = g.AddLast("h");     // 4
-            var i = f.AddLast("i");     // 4
-            var j = h.AddNext("j");     // 4
+            var a = new StringNode("a"); // 1
+            var b = a.AddFirst(new StringNode("b")); // 2
+            var c = a.AddLast(new StringNode("c")); // 2
+            var d = a.AddFirst(new StringNode("d")); // 2
+            var e = a.AddFirst(new StringNode("e")); // 2
+            var f = b.AddFirst(new StringNode("f")); // 3
+            var g = b.AddFirst(new StringNode("g")); // 3
+            var h = g.AddLast("h"); // 4
+            var i = f.AddLast("i"); // 4
+            var j = h.AddNext("j"); // 4
             var k = h.AddPrevious("k"); // 4
             var l = i.AddPrevious("l"); // 4
-            var m = i.AddNext("m");     // 4
+            var m = i.AddNext("m"); // 4
             a.ToString()
                     .Should()
                     .Be(
@@ -160,20 +160,32 @@ namespace TreeDotNet.Tests {
             string.Join("", i.AncestorsAndSelf(0).Select(n => n.Value)).Should().Be("i");
 
             string.Join("", f.AncestorsAndSiblingsAfterSelf().Select(n => n.Value)).Should().Be("c");
-            string.Join("", f.AncestorsAndSiblingsAfterSelfAndSelf().Select(n => n.Value)).Should().Be("fc");
-            string.Join("", f.AncestorsAndSiblingsBeforeSelf().Select(n => n.Value)).Should().Be("gbdea");
-            string.Join("", f.AncestorsAndSiblingsBeforeSelfAndSelf().Select(n => n.Value)).Should().Be("fgbdea");
+            string.Join("", f.AncestorsAndSiblingsAfterSelfAndSelf().Select(n => n.Value))
+                    .Should()
+                    .Be("fc");
+            string.Join("", f.AncestorsAndSiblingsBeforeSelf().Select(n => n.Value))
+                    .Should()
+                    .Be("gbdea");
+            string.Join("", f.AncestorsAndSiblingsBeforeSelfAndSelf().Select(n => n.Value))
+                    .Should()
+                    .Be("fgbdea");
 
-            string.Join("", h.AncestorsAndSiblingsAfterSelf().Select(n => n.Value)).Should().Be("jfc");
-            string.Join("", h.AncestorsAndSiblingsAfterSelfAndSelf().Select(n => n.Value)).Should().Be("hjfc");
-            string.Join("", h.AncestorsAndSiblingsBeforeSelf().Select(n => n.Value)).Should().Be("kgbdea");
-            string.Join("", h.AncestorsAndSiblingsBeforeSelfAndSelf().Select(n => n.Value)).Should().Be("hkgbdea");
-
+            string.Join("", h.AncestorsAndSiblingsAfterSelf().Select(n => n.Value))
+                    .Should()
+                    .Be("jfc");
+            string.Join("", h.AncestorsAndSiblingsAfterSelfAndSelf().Select(n => n.Value))
+                    .Should()
+                    .Be("hjfc");
+            string.Join("", h.AncestorsAndSiblingsBeforeSelf().Select(n => n.Value))
+                    .Should()
+                    .Be("kgbdea");
+            string.Join("", h.AncestorsAndSiblingsBeforeSelfAndSelf().Select(n => n.Value))
+                    .Should()
+                    .Be("hkgbdea");
 
             Assert.That(b.Ancestors(), Is.EqualTo(new[] { a }));
             Assert.That(b.AncestorsAndSelf(), Is.EqualTo(new[] { b, a }));
             Assert.That(b.Children(), Is.EqualTo(new[] { g, f }));
-            Assert.That(b.ChildrenAndSelf(), Is.EqualTo(new[] { b, g, f }));
             Assert.That(b.ChildrenCount, Is.EqualTo(2));
             Assert.That(b.NextsFromSelf(), Is.EqualTo(new[] { c }));
             Assert.That(b.NextsFromSelfAndSelf(), Is.EqualTo(new[] { b, c }));
@@ -189,7 +201,6 @@ namespace TreeDotNet.Tests {
             Assert.That(e.Ancestors(), Is.EqualTo(new[] { a }));
             Assert.That(e.AncestorsAndSelf(), Is.EqualTo(new[] { e, a }));
             Assert.That(e.Children(), Is.EqualTo(new StringNode[0]));
-            Assert.That(e.ChildrenAndSelf(), Is.EqualTo(new[] { e }));
             Assert.That(e.ChildrenCount, Is.EqualTo(0));
             Assert.That(e.NextsFromSelf(), Is.EqualTo(new[] { d, b, c }));
             Assert.That(e.NextsFromSelfAndSelf(), Is.EqualTo(new[] { e, d, b, c }));
@@ -202,12 +213,32 @@ namespace TreeDotNet.Tests {
             Assert.That(e.DescendantsOfFirstChild(), Is.EqualTo(new StringNode[0]));
             Assert.That(e.DescendantsOfFirstChildAndSelf(), Is.EqualTo(new[] { e }));
 
-            g.Remove().Should().BeTrue();
-            string.Join("", a.Descendants().Select(n => n.Value)).Should().Be("edbflimc");
-            f.Remove().Should().BeTrue();
-            string.Join("", a.Descendants().Select(n => n.Value)).Should().Be("edbc");
-            g.Remove().Should().BeFalse();
-            f.Remove().Should().BeFalse();
+            var restoreG = g.Remove();
+            Assert.That(restoreG, Is.Not.Null);
+            Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
+                    Is.EqualTo("edbflimc"));
+            var restoreF = f.Remove();
+            Assert.That(restoreF, Is.Not.Null);
+            Assert.That(string.Join("", a.Descendants().Select(n => n.Value)), Is.EqualTo("edbc"));
+            Assert.That(g.Remove(), Is.Null);
+            Assert.That(f.Remove(), Is.Null);
+            restoreF();
+            Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
+                    Is.EqualTo("edbflimc"));
+            restoreG();
+            Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
+                    Is.EqualTo("edbgkhjflimc"));
+
+            Assert.That(a.Remove(), Is.Null);
+            foreach (var node in a.Descendants().ToList()) {
+                var restore = node.Remove();
+                Assert.That(restore, Is.Not.Null);
+                Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
+                        Is.Not.StringContaining(node.Value));
+                restore();
+                Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
+                        Is.EqualTo("edbgkhjflimc"));
+            }
         }
 
         [Test]
