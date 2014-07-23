@@ -438,33 +438,52 @@ namespace TreeDotNet {
         /// Returns the action that add this node to restore the original tree removing this node.
         /// </summary>
         /// <returns>The action that add this node to restore the original tree</returns>
-        public Action Remove() {
+        public Action RecoverablyRemove() {
             if (Parent == null) {
                 return null;
             }
             var next = CyclicNext;
-            Action action;
             if (next != this) {
                 CyclicPrev.CyclicNext = next;
                 next.CyclicPrev = CyclicPrev;
                 if (Parent.FirstChild == this) {
                     Parent.FirstChild = next;
-                    action = () => {
+                    return () => {
                         next.Parent.FirstChild = ThisNode;
-                        next.AddPreviousIgnoringFirstChild(ThisNode);
+                        CyclicPrev.CyclicNext = ThisNode;
+                        next.CyclicPrev = ThisNode;
                     };
-                } else {
-                    action = () => next.AddPreviousIgnoringFirstChild(ThisNode);
+                }
+                return () => {
+                    CyclicPrev.CyclicNext = ThisNode;
+                    next.CyclicPrev = ThisNode;
+                };
+            }
+            var parent = Parent;
+            parent.FirstChild = null;
+            return () => { parent.FirstChild = ThisNode; };
+        }
+
+        /// <summary>
+        /// Remove this node.
+        /// </summary>
+        public void Remove() {
+            if (Parent == null) {
+                return;
+            }
+            var next = CyclicNext;
+            if (next != this) {
+                CyclicPrev.CyclicNext = next;
+                next.CyclicPrev = CyclicPrev;
+                if (Parent.FirstChild == this) {
+                    Parent.FirstChild = next;
                 }
             } else {
-                var parent = Parent;
-                parent.FirstChild = null;
-                action = () => parent.AddFirst(ThisNode);
+                Parent.FirstChild = null;
             }
             CyclicNext = null;
             CyclicPrev = null;
             Parent = null;
-            return action;
         }
 
         public override String ToString() {

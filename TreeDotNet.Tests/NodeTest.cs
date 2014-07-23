@@ -213,25 +213,29 @@ namespace TreeDotNet.Tests {
             Assert.That(e.DescendantsOfFirstChild(), Is.EqualTo(new StringNode[0]));
             Assert.That(e.DescendantsOfFirstChildAndSelf(), Is.EqualTo(new[] { e }));
 
-            var restoreG = g.Remove();
+            var restoreG = g.RecoverablyRemove();
             Assert.That(restoreG, Is.Not.Null);
             Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
                     Is.EqualTo("edbflimc"));
-            var restoreF = f.Remove();
+            var restoreF = f.RecoverablyRemove();
             Assert.That(restoreF, Is.Not.Null);
             Assert.That(string.Join("", a.Descendants().Select(n => n.Value)), Is.EqualTo("edbc"));
-            Assert.That(g.Remove(), Is.Null);
-            Assert.That(f.Remove(), Is.Null);
+            var anotherRestoreF = f.RecoverablyRemove();
+            restoreF();
+            anotherRestoreF();
             restoreF();
             Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
                     Is.EqualTo("edbflimc"));
+            var anotherRestoreG = g.RecoverablyRemove();
+            restoreG();
+            anotherRestoreG();
             restoreG();
             Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
                     Is.EqualTo("edbgkhjflimc"));
 
-            Assert.That(a.Remove(), Is.Null);
-            foreach (var node in a.Descendants().ToList()) {
-                var restore = node.Remove();
+            Assert.That(a.RecoverablyRemove(), Is.Null);
+            foreach (var node in a.Descendants()) {
+                var restore = node.RecoverablyRemove();
                 Assert.That(restore, Is.Not.Null);
                 Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
                         Is.Not.StringContaining(node.Value));
