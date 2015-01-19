@@ -93,6 +93,20 @@ namespace TreeDotNet.Tests {
                             "a\n  e\n  d\n  b\n    g\n      k\n      h\n      j\n    f\n      l\n      i\n      m\n  c\n"
                                     .NormalizeNewLine());
 
+			Assert.That(a.LengthFromDeepestChild, Is.EqualTo(3));
+			Assert.That(b.LengthFromDeepestChild, Is.EqualTo(2));
+			Assert.That(c.LengthFromDeepestChild, Is.EqualTo(0));
+			Assert.That(d.LengthFromDeepestChild, Is.EqualTo(0));
+			Assert.That(e.LengthFromDeepestChild, Is.EqualTo(0));
+			Assert.That(f.LengthFromDeepestChild, Is.EqualTo(1));
+			Assert.That(g.LengthFromDeepestChild, Is.EqualTo(1));
+			Assert.That(h.LengthFromDeepestChild, Is.EqualTo(0));
+			Assert.That(i.LengthFromDeepestChild, Is.EqualTo(0));
+			Assert.That(j.LengthFromDeepestChild, Is.EqualTo(0));
+			Assert.That(k.LengthFromDeepestChild, Is.EqualTo(0));
+			Assert.That(l.LengthFromDeepestChild, Is.EqualTo(0));
+			Assert.That(m.LengthFromDeepestChild, Is.EqualTo(0));
+
             string.Join("", a.Descendants().Select(n => n.Value)).Should().Be("edbgkhjflimc");
             string.Join("", e.Descendants().Select(n => n.Value)).Should().Be("");
             string.Join("", d.Descendants().Select(n => n.Value)).Should().Be("");
@@ -186,6 +200,7 @@ namespace TreeDotNet.Tests {
             Assert.That(b.Ancestors(), Is.EqualTo(new[] { a }));
             Assert.That(b.AncestorsAndSelf(), Is.EqualTo(new[] { b, a }));
             Assert.That(b.Children(), Is.EqualTo(new[] { g, f }));
+            Assert.That(b.ReverseChildren(), Is.EqualTo(b.Children().Reverse()));
             Assert.That(b.ChildrenCount, Is.EqualTo(2));
             Assert.That(b.NextsFromSelf(), Is.EqualTo(new[] { c }));
             Assert.That(b.NextsFromSelfAndSelf(), Is.EqualTo(new[] { b, c }));
@@ -201,6 +216,7 @@ namespace TreeDotNet.Tests {
             Assert.That(e.Ancestors(), Is.EqualTo(new[] { a }));
             Assert.That(e.AncestorsAndSelf(), Is.EqualTo(new[] { e, a }));
             Assert.That(e.Children(), Is.EqualTo(new StringNode[0]));
+            Assert.That(e.ReverseChildren(), Is.EqualTo(e.Children().Reverse()));
             Assert.That(e.ChildrenCount, Is.EqualTo(0));
             Assert.That(e.NextsFromSelf(), Is.EqualTo(new[] { d, b, c }));
             Assert.That(e.NextsFromSelfAndSelf(), Is.EqualTo(new[] { e, d, b, c }));
@@ -217,9 +233,11 @@ namespace TreeDotNet.Tests {
             Assert.That(restoreG, Is.Not.Null);
             Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
                     Is.EqualTo("edbflimc"));
+
             var restoreF = f.RecoverablyRemove();
             Assert.That(restoreF, Is.Not.Null);
             Assert.That(string.Join("", a.Descendants().Select(n => n.Value)), Is.EqualTo("edbc"));
+
             var anotherRestoreF = f.RecoverablyRemove();
             restoreF();
             anotherRestoreF();

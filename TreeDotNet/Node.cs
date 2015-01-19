@@ -121,6 +121,24 @@ namespace TreeDotNet {
             get { return Children().Count(); }
         }
 
+        /// <summary>
+        /// Gets the length from the deepest child node.
+        /// </summary>
+	    public int LengthFromDeepestChild {
+		    get { return GetLengthFromDeepestChild(); }
+	    }
+
+	    private int GetLengthFromDeepestChild() {
+		    var maxLength = 0;
+		    foreach (var child in Children()) {
+			    var length = child.GetLengthFromDeepestChild() + 1;
+			    if (maxLength < length) {
+				    maxLength = length;
+			    }
+		    }
+		    return maxLength;
+	    }
+
         #region Traversal
 
         public TNode ChildAtOrNull(int index) {
@@ -148,6 +166,18 @@ namespace TreeDotNet {
             do {
                 yield return node;
                 node = node.CyclicNext;
+            } while (node != terminal);
+        }
+
+        public IEnumerable<TNode> ReverseChildren() {
+            var node = LastChild;
+            if (node == null) {
+                yield break;
+            }
+            var terminal = node;
+            do {
+                yield return node;
+                node = node.CyclicPrev;
             } while (node != terminal);
         }
 
