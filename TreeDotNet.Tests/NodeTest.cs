@@ -229,31 +229,30 @@ namespace TreeDotNet.Tests {
             Assert.That(e.DescendantsOfFirstChild(), Is.EqualTo(new StringNode[0]));
             Assert.That(e.DescendantsOfFirstChildAndSelf(), Is.EqualTo(new[] { e }));
 
-            var restoreG = g.RecoverablyRemove();
+            var restoreG = g.RemoveRecoverably();
             Assert.That(restoreG, Is.Not.Null);
             Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
                     Is.EqualTo("edbflimc"));
 
-            var restoreF = f.RecoverablyRemove();
+            var restoreF = f.RemoveRecoverably();
             Assert.That(restoreF, Is.Not.Null);
             Assert.That(string.Join("", a.Descendants().Select(n => n.Value)), Is.EqualTo("edbc"));
 
-            var anotherRestoreF = f.RecoverablyRemove();
+            var anotherRestoreF = f.RemoveRecoverably();
             restoreF();
             anotherRestoreF();
             restoreF();
             Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
                     Is.EqualTo("edbflimc"));
-            var anotherRestoreG = g.RecoverablyRemove();
+            var anotherRestoreG = g.RemoveRecoverably();
             restoreG();
             anotherRestoreG();
             restoreG();
             Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
                     Is.EqualTo("edbgkhjflimc"));
 
-            Assert.That(a.RecoverablyRemove(), Is.Null);
             foreach (var node in a.Descendants()) {
-                var restore = node.RecoverablyRemove();
+                var restore = node.RemoveRecoverably();
                 Assert.That(restore, Is.Not.Null);
                 Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
                         Is.Not.StringContaining(node.Value));
@@ -261,6 +260,45 @@ namespace TreeDotNet.Tests {
                 Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
                         Is.EqualTo("edbgkhjflimc"));
             }
+
+			h.Replace(new StringNode("1"));
+                Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
+                        Is.EqualTo("edbgk1jflimc"));
+			i.Replace(new StringNode("2"));
+                Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
+                        Is.EqualTo("edbgk1jfl2mc"));
+			j.Replace(new StringNode("3"));
+                Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
+                        Is.EqualTo("edbgk13fl2mc"));
+			k.Replace(new StringNode("4"));
+                Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
+                        Is.EqualTo("edbg413fl2mc"));
+			l.Replace(new StringNode("5"));
+                Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
+                        Is.EqualTo("edbg413f52mc"));
+			m.Replace(new StringNode("6"));
+                Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
+                        Is.EqualTo("edbg413f526c"));
+
+			f.Replace(new StringNode("7"));
+                Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
+                        Is.EqualTo("edbg4137c"));
+			g.Replace(new StringNode("8"));
+                Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
+                        Is.EqualTo("edb87c"));
+
+			b.Replace(new StringNode("9"));
+                Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
+                        Is.EqualTo("ed9c"));
+			c.Replace(new StringNode("0"));
+                Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
+                        Is.EqualTo("ed90"));
+			d.Replace(new StringNode("1"));
+                Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
+                        Is.EqualTo("e190"));
+			e.Replace(new StringNode("2"));
+                Assert.That(string.Join("", a.Descendants().Select(n => n.Value)),
+                        Is.EqualTo("2190"));
         }
 
         [Test]
