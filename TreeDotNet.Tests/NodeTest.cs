@@ -347,6 +347,18 @@ namespace TreeDotNet.Tests {
         }
 
         [Test]
+        public void Replace() {
+            var a = new StringNode("a");
+            var b = new StringNode("b");
+            var c = new StringNode("c");
+            // a - b - c
+            a.AddFirst(b);
+            b.AddFirst(c);
+            b.Replace(new StringNode("d"));
+            string.Join("", a.DescendantsAndSelf().Select(n => n.Value)).Should().Be("ad");
+        }
+
+        [Test]
         public void UseExtensionMethodsForIEnumerable() {
             new XElement[0].Descendants("test").Descendants("test");
             new StringNode[0].Descendants("test").Descendants("test");

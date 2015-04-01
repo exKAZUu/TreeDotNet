@@ -474,8 +474,9 @@ namespace TreeDotNet {
 			newNode.Parent = Parent;
 			newNode.CyclicNext = CyclicNext;
 			newNode.CyclicPrev = CyclicPrev;
-			CyclicPrev.CyclicNext = newNode;
+			CyclicPrev.CyclicNext = newNode;    // prev.next = newNode
 			CyclicNext.CyclicPrev = newNode;
+			newNode.CyclicPrev.CyclicNext = newNode;
 			if (Parent.FirstChild == this) {
 				Parent.FirstChild = newNode;
 			}
